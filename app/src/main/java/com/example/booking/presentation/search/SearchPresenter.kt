@@ -1,6 +1,7 @@
 package com.example.booking.presentation.search
 
 import android.content.Context
+import com.example.booking.presentation.attractions.common.AttractionDraftStore
 import com.example.booking.common.format.BookingFormatters
 import com.example.booking.data.DataRepository
 import com.example.booking.model.SearchSignal
@@ -10,6 +11,7 @@ import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraftStor
 import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.common.FlightTripType
 import com.example.booking.presentation.stays.common.StayDraftStore
+import com.example.booking.presentation.taxi.common.TaxiDraftStore
 import java.util.UUID
 import kotlin.math.max
 
@@ -22,11 +24,15 @@ class SearchPresenter(
         val flightDraft = FlightDraftStore.snapshot()
         val flightHotelDraft = FlightPlusHotelDraftStore.snapshot()
         val carDraft = CarRentalDraftStore.snapshot()
+        val taxiDraft = TaxiDraftStore.snapshot()
+        val attractionDraft = AttractionDraftStore.snapshot()
 
         val hotels = DataRepository.loadHotels(context)
         val flights = DataRepository.loadFlights(context)
         val airports = DataRepository.loadAirports(context)
         val carRentals = DataRepository.loadCarRentals(context)
+        val taxiRoutes = DataRepository.loadTaxiRoutes(context)
+        val attractions = DataRepository.loadAttractions(context)
 
         val airportMap = airports.associateBy { it.code }
 
@@ -86,6 +92,28 @@ class SearchPresenter(
         val flightHotelArrivalCity = airportMap[flightHotelDraft.arrivalAirportCode]?.city
             ?: flightHotelDraft.stayDestinationQuery
 
+        val taxiRecentItems = taxiRoutes
+            .take(4)
+            .map { route ->
+                TaxiRecentItem(
+                    title = route.destination,
+                    subtitle = route.pickupLocation,
+                    meta = "From ${BookingFormatters.formatCurrency(route.price, route.currency)} | ${route.estimatedDurationMinutes} min"
+                )
+            }
+
+        val attractionCards = attractions
+            .sortedWith(compareByDescending<com.example.booking.model.Attraction> { it.rating }.thenBy { it.fromPrice })
+            .take(6)
+            .mapIndexed { index, attraction ->
+                AttractionHighlightCard(
+                    title = attraction.name,
+                    subtitle = "${attraction.city}, ${attraction.country}",
+                    priceText = "From ${BookingFormatters.formatCurrency(attraction.fromPrice, attraction.currency)}",
+                    badgeText = if (index % 2 == 0) "Genius" else "Top rated"
+                )
+            }
+
         view.showState(
             SearchUiState(
                 stayDestinationLabel = stayDraft.destinationQuery.ifBlank { "Destination, landmark, or property" },
@@ -135,6 +163,19 @@ class SearchPresenter(
                 carPickupLocationLabel = carDraft.pickupLocation,
                 carDateLabel = buildCarRentalDateLabel(carDraft),
                 carDriverAgeLabel = "Driver's age: ${carDraft.driverAgeBand}",
+                taxiTripType = taxiDraft.tripType,
+                taxiPickupLocationLabel = taxiDraft.pickupLocation,
+                taxiDestinationLabel = taxiDraft.destination,
+                taxiTimeLabel = buildTaxiTimeLabel(taxiDraft),
+                taxiPassengerLabel = "${taxiDraft.passengerCount} passenger" + if (taxiDraft.passengerCount == 1) "" else "s",
+                taxiRecentItems = taxiRecentItems,
+                attractionDestinationLabel = attractionDraft.destinationQuery,
+                attractionDateLabel = if (attractionDraft.selectedDate != java.time.LocalDate.MIN) {
+                    BookingFormatters.formatLongLocalDate(attractionDraft.selectedDate)
+                } else {
+                    "Any dates"
+                },
+                attractionCards = attractionCards,
                 recentItems = recentItems,
                 destinationCards = destinationCards,
                 popularCarCompanies = carRentals.map { it.companyName }.distinct().take(8),
@@ -292,6 +333,44 @@ class SearchPresenter(
         )
     }
 
+    override fun submitTaxiSearch(context: Context) {
+        TaxiDraftStore.prepareForSearch()
+        val draft = TaxiDraftStore.snapshot()
+        DataRepository.appendSearchSignal(
+            context = context,
+            signal = SearchSignal(
+                signalId = "taxi_search_${UUID.randomUUID()}",
+                searchType = "TAXI_SEARCH_SUBMITTED",
+                destination = "${draft.pickupLocation} -> ${draft.destination}",
+                checkInDate = BookingFormatters.localDateTimeToEpochMillis(draft.pickupDateTime),
+                checkOutDate = if (draft.tripType == com.example.booking.presentation.taxi.common.TaxiTripType.RoundTrip) {
+                    BookingFormatters.localDateTimeToEpochMillis(draft.returnDateTime)
+                } else {
+                    null
+                },
+                guestCount = draft.passengerCount,
+                occurredAt = System.currentTimeMillis()
+            )
+        )
+    }
+
+    override fun submitAttractionSearch(context: Context) {
+        AttractionDraftStore.prepareForSearch()
+        val draft = AttractionDraftStore.snapshot()
+        DataRepository.appendSearchSignal(
+            context = context,
+            signal = SearchSignal(
+                signalId = "attraction_search_${UUID.randomUUID()}",
+                searchType = "ATTRACTION_SEARCH_SUBMITTED",
+                destination = draft.destinationQuery,
+                checkInDate = BookingFormatters.localDateToEpochMillis(draft.selectedDate),
+                checkOutDate = null,
+                guestCount = 1,
+                occurredAt = System.currentTimeMillis()
+            )
+        )
+    }
+
     private fun airportLabel(
         code: String,
         airportMap: Map<String, com.example.booking.model.Airport>
@@ -320,5 +399,21 @@ class SearchPresenter(
         } - ${BookingFormatters.formatShortLocalDate(draft.returnDateTime.toLocalDate())} at ${
             BookingFormatters.formatTime(draft.returnDateTime)
         }"
+    }
+
+    private fun buildTaxiTimeLabel(
+        draft: com.example.booking.presentation.taxi.common.TaxiDraft
+    ): String {
+        return if (draft.tripType == com.example.booking.presentation.taxi.common.TaxiTripType.RoundTrip) {
+            "${BookingFormatters.formatShortLocalDate(draft.pickupDateTime.toLocalDate())} ${
+                BookingFormatters.formatTime(draft.pickupDateTime)
+            } - ${BookingFormatters.formatShortLocalDate(draft.returnDateTime.toLocalDate())} ${
+                BookingFormatters.formatTime(draft.returnDateTime)
+            }"
+        } else {
+            "${BookingFormatters.formatShortLocalDate(draft.pickupDateTime.toLocalDate())} at ${
+                BookingFormatters.formatTime(draft.pickupDateTime)
+            }"
+        }
     }
 }

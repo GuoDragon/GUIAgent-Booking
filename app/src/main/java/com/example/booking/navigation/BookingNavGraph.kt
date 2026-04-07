@@ -10,6 +10,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.booking.presentation.account.AccountScreen
 import com.example.booking.presentation.addcompanion.AddTravelCompanionScreen
+import com.example.booking.presentation.attractions.booking.AttractionPaymentScreen
+import com.example.booking.presentation.attractions.booking.AttractionPaymentSuccessScreen
+import com.example.booking.presentation.attractions.booking.AttractionPersonalInfoScreen
+import com.example.booking.presentation.attractions.common.AttractionDraftStore
+import com.example.booking.presentation.attractions.details.AttractionDetailsScreen
+import com.example.booking.presentation.attractions.details.AttractionPreviewScreen
+import com.example.booking.presentation.attractions.details.AttractionTicketDetailsScreen
+import com.example.booking.presentation.attractions.details.AttractionTicketsScreen
+import com.example.booking.presentation.attractions.input.AttractionDateScreen
+import com.example.booking.presentation.attractions.input.AttractionDestinationScreen
+import com.example.booking.presentation.attractions.results.AttractionResultsScreen
 import com.example.booking.presentation.carrentals.booking.CarRentalBookingSuccessScreen
 import com.example.booking.presentation.carrentals.booking.CarRentalBookingSummaryScreen
 import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
@@ -44,6 +55,14 @@ import com.example.booking.presentation.stays.input.StayDateScreen
 import com.example.booking.presentation.stays.input.StayDestinationScreen
 import com.example.booking.presentation.stays.results.StayFilterScreen
 import com.example.booking.presentation.stays.results.StayResultsScreen
+import com.example.booking.presentation.taxi.booking.TaxiBookingSuccessScreen
+import com.example.booking.presentation.taxi.booking.TaxiContactDetailsScreen
+import com.example.booking.presentation.taxi.booking.TaxiOverviewScreen
+import com.example.booking.presentation.taxi.input.TaxiDestinationScreen
+import com.example.booking.presentation.taxi.input.TaxiPassengersScreen
+import com.example.booking.presentation.taxi.input.TaxiPickupLocationScreen
+import com.example.booking.presentation.taxi.input.TaxiTimeScreen
+import com.example.booking.presentation.taxi.results.TaxiResultsScreen
 import com.example.booking.presentation.travelcompanions.TravelCompanionsScreen
 
 @Composable
@@ -65,7 +84,15 @@ fun BookingNavGraph(
                 onFlightSearchClick = { navController.navigate(BookingRoutes.FlightResults) },
                 onFlightHotelSearchClick = { navController.navigate(BookingRoutes.FlightPlusHotelHub) },
                 onCarDateClick = { navController.navigate(BookingRoutes.CarRentalDate) },
-                onCarSearchClick = { navController.navigate(BookingRoutes.CarRentalResults) }
+                onCarSearchClick = { navController.navigate(BookingRoutes.CarRentalResults) },
+                onTaxiPickupClick = { navController.navigate(BookingRoutes.TaxiPickupLocation) },
+                onTaxiDestinationClick = { navController.navigate(BookingRoutes.TaxiDestination) },
+                onTaxiTimeClick = { navController.navigate(BookingRoutes.TaxiTime) },
+                onTaxiPassengersClick = { navController.navigate(BookingRoutes.TaxiPassengers) },
+                onTaxiSearchClick = { navController.navigate(BookingRoutes.TaxiResults) },
+                onAttractionDestinationClick = { navController.navigate(BookingRoutes.AttractionDestination) },
+                onAttractionDateClick = { navController.navigate(BookingRoutes.AttractionDate) },
+                onAttractionSearchClick = { navController.navigate(BookingRoutes.AttractionResults) }
             )
         }
         composable(BookingRoutes.Saved) { SavedScreen() }
@@ -314,6 +341,157 @@ fun BookingNavGraph(
             arguments = listOf(navArgument("orderId") { type = NavType.StringType })
         ) { backStackEntry ->
             CarRentalBookingSuccessScreen(
+                orderId = backStackEntry.arguments?.getString("orderId").orEmpty(),
+                onBackClick = { navController.popBackStack() },
+                onViewTripsClick = {
+                    navController.navigate(BookingRoutes.Orders) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onSearchAgainClick = {
+                    navController.navigate(BookingRoutes.Search) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
+
+        composable(BookingRoutes.TaxiPickupLocation) {
+            TaxiPickupLocationScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(BookingRoutes.TaxiDestination) {
+            TaxiDestinationScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(BookingRoutes.TaxiTime) {
+            TaxiTimeScreen(
+                onBackClick = { navController.popBackStack() },
+                onApplyClick = { navController.popBackStack() }
+            )
+        }
+        composable(BookingRoutes.TaxiPassengers) {
+            TaxiPassengersScreen(
+                onBackClick = { navController.popBackStack() },
+                onApplyClick = { navController.popBackStack() }
+            )
+        }
+        composable(BookingRoutes.TaxiResults) {
+            TaxiResultsScreen(
+                onBackClick = { navController.popBackStack() },
+                onContinueClick = { navController.navigate(BookingRoutes.TaxiContactDetails) }
+            )
+        }
+        composable(BookingRoutes.TaxiContactDetails) {
+            TaxiContactDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onNextClick = { navController.navigate(BookingRoutes.TaxiOverview) }
+            )
+        }
+        composable(BookingRoutes.TaxiOverview) {
+            TaxiOverviewScreen(
+                onBackClick = { navController.popBackStack() },
+                onBookingComplete = { orderId ->
+                    navController.navigate(BookingRoutes.taxiBookingSuccess(orderId)) {
+                        popUpTo(BookingRoutes.Search) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(
+            route = BookingRoutes.TaxiBookingSuccessWithOrderId,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            TaxiBookingSuccessScreen(
+                orderId = backStackEntry.arguments?.getString("orderId").orEmpty(),
+                onBackClick = { navController.popBackStack() },
+                onViewTripsClick = {
+                    navController.navigate(BookingRoutes.Orders) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onSearchAgainClick = {
+                    navController.navigate(BookingRoutes.Search) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
+
+        composable(BookingRoutes.AttractionDestination) {
+            AttractionDestinationScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(BookingRoutes.AttractionDate) {
+            AttractionDateScreen(
+                onBackClick = { navController.popBackStack() },
+                onApplyClick = { navController.popBackStack() }
+            )
+        }
+        composable(BookingRoutes.AttractionResults) {
+            AttractionResultsScreen(
+                onBackClick = { navController.popBackStack() },
+                onAttractionClick = { attractionId ->
+                    AttractionDraftStore.selectAttraction(attractionId)
+                    navController.navigate(BookingRoutes.AttractionPreview)
+                }
+            )
+        }
+        composable(BookingRoutes.AttractionPreview) {
+            AttractionPreviewScreen(
+                onBackClick = { navController.popBackStack() },
+                onContinueClick = { navController.navigate(BookingRoutes.AttractionDetails) }
+            )
+        }
+        composable(BookingRoutes.AttractionDetails) {
+            AttractionDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onContinueClick = { navController.navigate(BookingRoutes.AttractionTickets) }
+            )
+        }
+        composable(BookingRoutes.AttractionTickets) {
+            AttractionTicketsScreen(
+                onBackClick = { navController.popBackStack() },
+                onTicketClick = { ticketId ->
+                    AttractionDraftStore.selectTicket(ticketId)
+                    navController.navigate(BookingRoutes.AttractionTicketDetails)
+                }
+            )
+        }
+        composable(BookingRoutes.AttractionTicketDetails) {
+            AttractionTicketDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onContinueClick = { navController.navigate(BookingRoutes.AttractionPersonalInfo) }
+            )
+        }
+        composable(BookingRoutes.AttractionPersonalInfo) {
+            AttractionPersonalInfoScreen(
+                onBackClick = { navController.popBackStack() },
+                onNextClick = { navController.navigate(BookingRoutes.AttractionPayment) }
+            )
+        }
+        composable(BookingRoutes.AttractionPayment) {
+            AttractionPaymentScreen(
+                onBackClick = { navController.popBackStack() },
+                onBookingComplete = { orderId ->
+                    navController.navigate(BookingRoutes.attractionPaymentSuccess(orderId)) {
+                        popUpTo(BookingRoutes.Search) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(
+            route = BookingRoutes.AttractionPaymentSuccessWithOrderId,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            AttractionPaymentSuccessScreen(
                 orderId = backStackEntry.arguments?.getString("orderId").orEmpty(),
                 onBackClick = { navController.popBackStack() },
                 onViewTripsClick = {

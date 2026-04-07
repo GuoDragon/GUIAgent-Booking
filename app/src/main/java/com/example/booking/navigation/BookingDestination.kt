@@ -48,12 +48,34 @@ object BookingRoutes {
     const val CarRentalBookingSummary = "car_rental_booking_summary"
     const val CarRentalBookingSuccess = "car_rental_booking_success"
     const val CarRentalBookingSuccessWithOrderId = "car_rental_booking_success/{orderId}"
+    const val TaxiPickupLocation = "taxi_pickup_location"
+    const val TaxiDestination = "taxi_destination"
+    const val TaxiTime = "taxi_time"
+    const val TaxiPassengers = "taxi_passengers"
+    const val TaxiResults = "taxi_results"
+    const val TaxiContactDetails = "taxi_contact_details"
+    const val TaxiOverview = "taxi_overview"
+    const val TaxiBookingSuccess = "taxi_booking_success"
+    const val TaxiBookingSuccessWithOrderId = "taxi_booking_success/{orderId}"
+    const val AttractionDestination = "attraction_destination"
+    const val AttractionDate = "attraction_date"
+    const val AttractionResults = "attraction_results"
+    const val AttractionPreview = "attraction_preview"
+    const val AttractionDetails = "attraction_details"
+    const val AttractionTickets = "attraction_tickets"
+    const val AttractionTicketDetails = "attraction_ticket_details"
+    const val AttractionPersonalInfo = "attraction_personal_info"
+    const val AttractionPayment = "attraction_payment"
+    const val AttractionPaymentSuccess = "attraction_payment_success"
+    const val AttractionPaymentSuccessWithOrderId = "attraction_payment_success/{orderId}"
 
     val topLevelRoutes = setOf(Search, Saved, Orders, Account)
 
     fun stayBookingSuccess(orderId: String): String = "$StayBookingSuccess/$orderId"
     fun flightBookingSuccess(orderId: String): String = "$FlightBookingSuccess/$orderId"
     fun carRentalBookingSuccess(orderId: String): String = "$CarRentalBookingSuccess/$orderId"
+    fun taxiBookingSuccess(orderId: String): String = "$TaxiBookingSuccess/$orderId"
+    fun attractionPaymentSuccess(orderId: String): String = "$AttractionPaymentSuccess/$orderId"
 }
 
 data class BookingBottomDestination(

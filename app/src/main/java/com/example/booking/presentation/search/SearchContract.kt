@@ -2,6 +2,7 @@ package com.example.booking.presentation.search
 
 import android.content.Context
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
+import com.example.booking.presentation.taxi.common.TaxiTripType
 import com.example.booking.presentation.flights.common.FlightTripType
 
 interface SearchContract {
@@ -16,6 +17,8 @@ interface SearchContract {
         fun submitFlightSearch(context: Context)
         fun submitFlightHotelSearch(context: Context)
         fun submitCarRentalSearch(context: Context)
+        fun submitTaxiSearch(context: Context)
+        fun submitAttractionSearch(context: Context)
     }
 }
 
@@ -23,7 +26,9 @@ enum class SearchProduct(val title: String) {
     Stays("Stays"),
     Flights("Flights"),
     FlightHotel("Flight + Hotel"),
-    CarRental("Car rental")
+    CarRental("Car rental"),
+    Taxi("Taxi"),
+    Attractions("Attractions")
 }
 
 enum class SearchRecentType {
@@ -53,6 +58,15 @@ data class SearchUiState(
     val carPickupLocationLabel: String = "",
     val carDateLabel: String = "",
     val carDriverAgeLabel: String = "",
+    val taxiTripType: TaxiTripType = TaxiTripType.OneWay,
+    val taxiPickupLocationLabel: String = "",
+    val taxiDestinationLabel: String = "",
+    val taxiTimeLabel: String = "",
+    val taxiPassengerLabel: String = "",
+    val taxiRecentItems: List<TaxiRecentItem> = emptyList(),
+    val attractionDestinationLabel: String = "",
+    val attractionDateLabel: String = "",
+    val attractionCards: List<AttractionHighlightCard> = emptyList(),
     val recentItems: List<RecentSearchItem> = emptyList(),
     val destinationCards: List<DestinationHighlight> = emptyList(),
     val popularCarCompanies: List<String> = emptyList(),
@@ -80,6 +94,19 @@ data class ContinueBookingCardUiModel(
     val title: String,
     val subtitle: String,
     val footnote: String
+)
+
+data class TaxiRecentItem(
+    val title: String,
+    val subtitle: String,
+    val meta: String
+)
+
+data class AttractionHighlightCard(
+    val title: String,
+    val subtitle: String,
+    val priceText: String,
+    val badgeText: String
 )
 
 data class AirportOptionUiModel(

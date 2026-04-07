@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.FlightTakeoff
 import androidx.compose.material.icons.filled.Hotel
+import androidx.compose.material.icons.filled.LocalActivity
+import androidx.compose.material.icons.filled.LocalTaxi
 import androidx.compose.material.icons.filled.Luggage
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
@@ -51,9 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
 import com.example.booking.presentation.flights.common.FlightTripType
+import com.example.booking.presentation.taxi.common.TaxiTripType
 import com.example.booking.ui.components.BookingPrimaryButton
 import com.example.booking.ui.components.BookingRoundedCard
 import com.example.booking.ui.components.BookingSectionHeader
+import com.example.booking.ui.components.BookingStatusChip
 import com.example.booking.ui.theme.BookingBlue
 import com.example.booking.ui.theme.BookingBlueLight
 import com.example.booking.ui.theme.BookingGray
@@ -421,6 +425,224 @@ fun CarRentalSearchContent(
 }
 
 @Composable
+fun TaxiSearchContent(
+    uiState: SearchUiState,
+    topPadding: Dp,
+    onProductSelected: (SearchProduct) -> Unit,
+    onTripTypeSelected: (TaxiTripType) -> Unit,
+    onPickupLocationClick: () -> Unit,
+    onDestinationClick: () -> Unit,
+    onTimeClick: () -> Unit,
+    onPassengersClick: () -> Unit,
+    onSearchClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(top = topPadding, bottom = 28.dp),
+        verticalArrangement = Arrangement.spacedBy(22.dp)
+    ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(BookingWhite)
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                SearchProductTabs(
+                    selectedProduct = SearchProduct.Taxi,
+                    onProductSelected = onProductSelected
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    color = BookingWhite
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .border(2.dp, Color(0xFFFEBB02), RoundedCornerShape(20.dp))
+                            .padding(12.dp)
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            TaxiTripType.entries.forEach { tripType ->
+                                SmallToggleChip(
+                                    text = tripType.label,
+                                    selected = uiState.taxiTripType == tripType,
+                                    onClick = { onTripTypeSelected(tripType) }
+                                )
+                            }
+                        }
+                        SearchFieldRow(
+                            icon = Icons.Filled.Place,
+                            text = uiState.taxiPickupLocationLabel,
+                            onClick = onPickupLocationClick,
+                            modifier = Modifier.padding(top = 10.dp)
+                        )
+                        SearchFieldRow(
+                            icon = Icons.Filled.Place,
+                            text = uiState.taxiDestinationLabel,
+                            onClick = onDestinationClick
+                        )
+                        SearchFieldRow(
+                            icon = Icons.Filled.CalendarToday,
+                            text = uiState.taxiTimeLabel,
+                            onClick = onTimeClick
+                        )
+                        SearchFieldRow(
+                            icon = Icons.Outlined.PersonOutline,
+                            text = uiState.taxiPassengerLabel,
+                            showDivider = false,
+                            onClick = onPassengersClick
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        BookingPrimaryButton(text = "Check prices", onClick = onSearchClick)
+                    }
+                }
+            }
+        }
+        if (uiState.taxiRecentItems.isNotEmpty()) {
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    BookingSectionHeader(title = "Continue your search")
+                    Spacer(modifier = Modifier.height(14.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(uiState.taxiRecentItems) { item ->
+                            BookingRoundedCard(modifier = Modifier.width(220.dp)) {
+                                Text(
+                                    text = item.title,
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = item.subtitle,
+                                    color = BookingTextSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = item.meta,
+                                    color = BookingBlueLight,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 10.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AttractionsSearchContent(
+    uiState: SearchUiState,
+    topPadding: Dp,
+    onProductSelected: (SearchProduct) -> Unit,
+    onDestinationClick: () -> Unit,
+    onDateClick: () -> Unit,
+    onSearchClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(top = topPadding, bottom = 28.dp),
+        verticalArrangement = Arrangement.spacedBy(22.dp)
+    ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(BookingWhite)
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                SearchProductTabs(
+                    selectedProduct = SearchProduct.Attractions,
+                    onProductSelected = onProductSelected
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    color = BookingWhite
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .border(2.dp, Color(0xFFFEBB02), RoundedCornerShape(20.dp))
+                            .padding(12.dp)
+                    ) {
+                        SearchFieldRow(
+                            icon = Icons.Filled.Search,
+                            text = uiState.attractionDestinationLabel,
+                            onClick = onDestinationClick
+                        )
+                        SearchFieldRow(
+                            icon = Icons.Filled.CalendarToday,
+                            text = uiState.attractionDateLabel,
+                            showDivider = false,
+                            onClick = onDateClick
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        BookingPrimaryButton(text = "Search", onClick = onSearchClick)
+                    }
+                }
+            }
+        }
+        if (uiState.attractionCards.isNotEmpty()) {
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    BookingSectionHeader(
+                        title = "Popular things to do",
+                        subtitle = "Use the local demo attractions data as the source of truth."
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(uiState.attractionCards) { card ->
+                            BookingRoundedCard(modifier = Modifier.width(230.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    BookingStatusChip(
+                                        text = card.badgeText,
+                                        containerColor = Color(0xFFE3F0FF),
+                                        contentColor = BookingBlueLight
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Filled.LocalActivity,
+                                        contentDescription = null,
+                                        tint = BookingBlue
+                                    )
+                                }
+                                Text(
+                                    text = card.title,
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(top = 14.dp)
+                                )
+                                Text(
+                                    text = card.subtitle,
+                                    color = BookingTextSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = card.priceText,
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(top = 14.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun StaysHeroSection(
     uiState: SearchUiState,
     onProductSelected: (SearchProduct) -> Unit,
@@ -472,23 +694,21 @@ private fun SearchProductTabs(
     selectedProduct: SearchProduct,
     onProductSelected: (SearchProduct) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         val products = listOf(
             SearchProduct.Stays to Icons.Filled.Hotel,
             SearchProduct.Flights to Icons.Filled.FlightTakeoff,
             SearchProduct.FlightHotel to Icons.Filled.Luggage,
-            SearchProduct.CarRental to Icons.Filled.DirectionsCar
+            SearchProduct.CarRental to Icons.Filled.DirectionsCar,
+            SearchProduct.Taxi to Icons.Filled.LocalTaxi,
+            SearchProduct.Attractions to Icons.Filled.LocalActivity
         )
-        products.forEach { (product, icon) ->
+        items(products) { (product, icon) ->
             ProductTabChip(
                 icon = icon,
                 title = product.title,
                 selected = product == selectedProduct,
-                onClick = { onProductSelected(product) },
-                modifier = Modifier.weight(1f)
+                onClick = { onProductSelected(product) }
             )
         }
     }

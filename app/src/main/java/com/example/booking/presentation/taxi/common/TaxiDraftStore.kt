@@ -1,0 +1,45 @@
+package com.example.booking.presentation.taxi.common
+
+import java.time.LocalDateTime
+
+enum class TaxiTripType(val label: String) {
+    OneWay("One-way"),
+    RoundTrip("Round-trip")
+}
+
+data class TaxiDraft(
+    val tripType: TaxiTripType = TaxiTripType.OneWay,
+    val pickupLocation: String = "John F. Kennedy International Airport",
+    val destination: String = "Manhattan City Center",
+    val pickupDateTime: LocalDateTime = LocalDateTime.now().plusDays(1).withHour(11).withMinute(0),
+    val returnDateTime: LocalDateTime = LocalDateTime.now().plusDays(2).withHour(17).withMinute(0),
+    val passengerCount: Int = 2,
+    val selectedRouteId: String? = null,
+    val contactName: String = "Alex Johnson",
+    val contactEmail: String = "alex@example.com",
+    val contactPhone: String = "+1 555 0148",
+    val flightNumber: String = "MU721",
+    val completedOrderId: String? = null
+)
+
+object TaxiDraftStore {
+    private var draft = TaxiDraft()
+
+    fun snapshot(): TaxiDraft = draft
+
+    fun update(transform: (TaxiDraft) -> TaxiDraft) {
+        draft = transform(draft)
+    }
+
+    fun prepareForSearch() {
+        draft = draft.copy(selectedRouteId = null, completedOrderId = null)
+    }
+
+    fun selectRoute(routeId: String) {
+        draft = draft.copy(selectedRouteId = routeId)
+    }
+
+    fun markBookingComplete(orderId: String) {
+        draft = draft.copy(completedOrderId = orderId)
+    }
+}

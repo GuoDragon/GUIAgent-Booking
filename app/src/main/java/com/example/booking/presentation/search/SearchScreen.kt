@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.example.booking.presentation.attractions.common.AttractionDraftStore
 import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
 import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraft
@@ -19,6 +20,8 @@ import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.common.FlightTripType
 import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.stays.input.StayGuestsSheet
+import com.example.booking.presentation.taxi.common.TaxiDraftStore
+import com.example.booking.presentation.taxi.common.TaxiTripType
 import com.example.booking.ui.components.BookingHomeTopBar
 import com.example.booking.ui.components.BookingTopBarAction
 import java.time.LocalDate
@@ -32,13 +35,23 @@ fun SearchScreen(
     onFlightSearchClick: () -> Unit,
     onFlightHotelSearchClick: () -> Unit,
     onCarDateClick: () -> Unit,
-    onCarSearchClick: () -> Unit
+    onCarSearchClick: () -> Unit,
+    onTaxiPickupClick: () -> Unit,
+    onTaxiDestinationClick: () -> Unit,
+    onTaxiTimeClick: () -> Unit,
+    onTaxiPassengersClick: () -> Unit,
+    onTaxiSearchClick: () -> Unit,
+    onAttractionDestinationClick: () -> Unit,
+    onAttractionDateClick: () -> Unit,
+    onAttractionSearchClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     val stayDraft = StayDraftStore.snapshot()
     val flightDraft = FlightDraftStore.snapshot()
     val flightHotelDraft = FlightPlusHotelDraftStore.snapshot()
     val carDraft = CarRentalDraftStore.snapshot()
+    val taxiDraft = TaxiDraftStore.snapshot()
+    val attractionDraft = AttractionDraftStore.snapshot()
     var selectedProductName by rememberSaveable { mutableStateOf(SearchProduct.Stays.name) }
     val selectedProduct = remember(selectedProductName) { SearchProduct.valueOf(selectedProductName) }
     var uiState by remember { mutableStateOf(SearchUiState()) }
@@ -53,7 +66,7 @@ fun SearchScreen(
     }
     val presenter = remember(view) { SearchPresenter(view) }
 
-    LaunchedEffect(presenter, context, stayDraft, flightDraft, flightHotelDraft, carDraft) {
+    LaunchedEffect(presenter, context, stayDraft, flightDraft, flightHotelDraft, carDraft, taxiDraft, attractionDraft) {
         presenter.loadData(context)
     }
 
@@ -261,6 +274,44 @@ fun SearchScreen(
                 onSearchClick = {
                     presenter.submitCarRentalSearch(context)
                     onCarSearchClick()
+                }
+            )
+
+            SearchProduct.Taxi -> TaxiSearchContent(
+                uiState = uiState,
+                topPadding = innerPadding.calculateTopPadding(),
+                onProductSelected = ::selectProduct,
+                onTripTypeSelected = { tripType ->
+                    TaxiDraftStore.update { draft ->
+                        draft.copy(
+                            tripType = tripType,
+                            returnDateTime = if (tripType == TaxiTripType.RoundTrip) {
+                                draft.returnDateTime
+                            } else {
+                                draft.pickupDateTime.plusHours(6)
+                            }
+                        )
+                    }
+                },
+                onPickupLocationClick = onTaxiPickupClick,
+                onDestinationClick = onTaxiDestinationClick,
+                onTimeClick = onTaxiTimeClick,
+                onPassengersClick = onTaxiPassengersClick,
+                onSearchClick = {
+                    presenter.submitTaxiSearch(context)
+                    onTaxiSearchClick()
+                }
+            )
+
+            SearchProduct.Attractions -> AttractionsSearchContent(
+                uiState = uiState,
+                topPadding = innerPadding.calculateTopPadding(),
+                onProductSelected = ::selectProduct,
+                onDestinationClick = onAttractionDestinationClick,
+                onDateClick = onAttractionDateClick,
+                onSearchClick = {
+                    presenter.submitAttractionSearch(context)
+                    onAttractionSearchClick()
                 }
             )
         }
