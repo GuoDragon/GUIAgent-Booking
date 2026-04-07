@@ -42,10 +42,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.booking.presentation.stays.common.StayPhotoPlaceholder
 import com.example.booking.ui.components.BookingStatusChip
+import com.example.booking.ui.components.BookingMapNoticeDialog
+import com.example.booking.ui.components.BookingReferenceImage
 import com.example.booking.ui.theme.BookingBlue
 import com.example.booking.ui.theme.BookingBlueLight
 import com.example.booking.ui.theme.BookingGray
 import com.example.booking.ui.theme.BookingGreen
+import com.example.booking.ui.theme.BookingRed
 import com.example.booking.ui.theme.BookingTextPrimary
 import com.example.booking.ui.theme.BookingTextSecondary
 import com.example.booking.ui.theme.BookingWhite
@@ -59,6 +62,7 @@ fun StayResultsScreen(
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(StayResultsUiState("", "", "", 0)) }
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
+    var showMapDialog by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
         object : StayResultsContract.View {
@@ -140,7 +144,10 @@ fun StayResultsScreen(
                 ResultsActionChip(
                     text = "Map",
                     icon = Icons.Filled.Map,
-                    onClick = { presenter.recordMapOpened(context) },
+                    onClick = {
+                        presenter.recordMapOpened(context)
+                        showMapDialog = true
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -169,6 +176,12 @@ fun StayResultsScreen(
     if (showSortSheet) {
         StaySortSheet(
             onDismissRequest = { showSortSheet = false }
+        )
+    }
+
+    if (showMapDialog) {
+        BookingMapNoticeDialog(
+            onDismissRequest = { showMapDialog = false }
         )
     }
 }
@@ -217,10 +230,11 @@ private fun StayHotelCard(
         shadowElevation = 2.dp
     ) {
         Row(modifier = Modifier.padding(12.dp)) {
-            StayPhotoPlaceholder(
-                title = hotel.city,
+            BookingReferenceImage(
+                assetPath = hotel.imageAssetPath,
                 modifier = Modifier.size(width = 112.dp, height = 150.dp),
-                compact = true
+                compact = true,
+                contentDescription = hotel.name
             )
             Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
                 Text(
@@ -259,7 +273,7 @@ private fun StayHotelCard(
                     text = hotel.locationText,
                     color = BookingTextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -272,12 +286,29 @@ private fun StayHotelCard(
                     modifier = Modifier.padding(top = 6.dp)
                 )
                 Text(
-                    text = hotel.highlightText,
+                    text = hotel.policyText,
                     color = BookingTextPrimary,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 6.dp)
+                )
+                Text(
+                    text = hotel.availabilityText,
+                    color = BookingRed,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = hotel.highlightText,
+                    color = BookingTextSecondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
                 Text(
                     text = hotel.priceText,

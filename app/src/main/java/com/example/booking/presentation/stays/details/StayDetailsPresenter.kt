@@ -33,10 +33,11 @@ class StayDetailsPresenter(
                 hotelId = hotel.hotelId,
                 hotelName = hotel.name,
                 starRating = hotel.starRating,
+                reviewScoreText = String.format("%.1f", hotel.rating),
                 ratingText = ratingLabel(hotel.rating),
-                reviewText = "${hotel.rating} | ${hotel.reviewCount} reviews",
+                reviewText = "${hotel.reviewCount} reviews",
                 address = hotel.address,
-                locationText = "${hotel.city}, ${hotel.country}",
+                locationText = ratingLabel(hotel.rating),
                 description = hotel.description,
                 highlightAmenities = hotel.amenities.take(6),
                 photoLabels = buildPhotoLabels(hotel),
@@ -77,7 +78,7 @@ class StayDetailsPresenter(
 
     private fun ratingLabel(rating: Double): String {
         return when {
-            rating >= 9.0 -> "Excellent location"
+            rating >= 9.0 -> "Excellent location!"
             rating >= 8.0 -> "Great location"
             else -> "Good location"
         }

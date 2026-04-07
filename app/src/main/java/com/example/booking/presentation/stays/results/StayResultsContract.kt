@@ -36,8 +36,11 @@ data class StayHotelCardUiModel(
     val locationText: String,
     val highlightText: String,
     val amenityText: String,
+    val policyText: String,
+    val availabilityText: String,
     val priceText: String,
-    val taxesText: String
+    val taxesText: String,
+    val imageAssetPath: String? = null
 )
 
 interface StaySortContract {

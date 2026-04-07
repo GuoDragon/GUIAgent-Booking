@@ -1,14 +1,15 @@
 package com.example.booking.presentation.carrentals.results
 
 import android.content.Context
+import com.example.booking.common.demo.DemoVisuals
 import com.example.booking.common.format.BookingFormatters
 import com.example.booking.data.DataRepository
+import com.example.booking.model.CarRental
 import com.example.booking.model.SearchSignal
 import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.carrentals.common.CarRentalFilterState
 import com.example.booking.presentation.carrentals.common.CarRentalFlowMapper
 import com.example.booking.presentation.carrentals.common.CarRentalSortOption
-import com.example.booking.model.CarRental
 import java.util.UUID
 
 class CarRentalResultsPresenter(
@@ -21,7 +22,11 @@ class CarRentalResultsPresenter(
             CarRentalFlowMapper.filterCars(DataRepository.loadCarRentals(context), draft),
             draft.sortOption
         )
-        val cards = expandCards(cars)
+        val cards = expandCards(
+            context = context,
+            cars = cars,
+            seed = draft.pickupLocation.ifBlank { "all_cars" }
+        )
 
         view.showState(
             CarRentalResultsUiState(
@@ -50,32 +55,80 @@ class CarRentalResultsPresenter(
         )
     }
 
-    private fun expandCards(cars: List<CarRental>): List<CarRentalCardUiModel> {
+    private fun expandCards(
+        context: Context,
+        cars: List<CarRental>,
+        seed: String
+    ): List<CarRentalCardUiModel> {
         if (cars.isEmpty()) return emptyList()
         val targetCount = maxOf(6, cars.size * 2)
+        val imageAssignments = DemoVisuals.carRentalImageAssignments(context, seed, targetCount)
         return List(targetCount) { index ->
-            carToCard(cars[index % cars.size], index)
+            carToCard(
+                car = cars[index % cars.size],
+                index = index,
+                imageAssetPath = imageAssignments.getOrNull(index)
+            )
         }
     }
 
-    private fun carToCard(car: CarRental, index: Int): CarRentalCardUiModel {
+    private fun carToCard(
+        car: CarRental,
+        index: Int,
+        imageAssetPath: String?
+    ): CarRentalCardUiModel {
+        val variantKey = "${car.carId}_$index"
         return CarRentalCardUiModel(
-            cardId = "${car.carId}_$index",
+            cardId = variantKey,
             carId = car.carId,
             title = "${car.carModel} or similar ${car.category.lowercase()}",
             detailLine = "${car.doors} doors | ${car.seats} seats",
             transmissionLine = "${car.transmission} | ${if (car.unlimitedMileage) "Unlimited km" else "Limited mileage"}",
             locationLine = car.pickupLocation,
+            pickupNote = buildPickupNote(variantKey),
             companyName = car.companyName,
             ratingText = String.format("%.1f", CarRentalFlowMapper.reviewScore(car)),
             reviewText = "${CarRentalFlowMapper.reviewCount(car)} reviews",
             priceText = BookingFormatters.formatCurrency(car.pricePerDay, car.currency),
             originalPriceText = BookingFormatters.formatCurrency(CarRentalFlowMapper.originalPrice(car), car.currency),
-            tagLabels = buildList {
-                add("12% discount applied")
-                if (car.freeCancellation) add("Free cancellation")
-            }
+            tagLabels = buildTagLabels(car, variantKey),
+            imageAssetPath = imageAssetPath
         )
+    }
+
+    private fun buildPickupNote(variantKey: String): String {
+        val options = listOf(
+            "Shuttle bus pick-up",
+            "Counter in arrivals hall",
+            "Outside of terminal",
+            "Meet & greet desk",
+            "Short walk from arrivals"
+        )
+        return options[DemoVisuals.stableIndex("$variantKey:pickup", options.size)]
+    }
+
+    private fun buildTagLabels(
+        car: CarRental,
+        variantKey: String
+    ): List<String> {
+        val promoOptions = listOf(
+            "12% discount applied",
+            "Genius price",
+            "Member deal",
+            "Top rated"
+        )
+        return buildList {
+            add(promoOptions[DemoVisuals.stableIndex("$variantKey:promo", promoOptions.size)])
+            if (car.freeCancellation) {
+                val freeCancelOptions = listOf(
+                    "Free cancellation",
+                    "Cancel up to 48h before pick-up"
+                )
+                add(freeCancelOptions[DemoVisuals.stableIndex("$variantKey:cancel", freeCancelOptions.size)])
+            } else if (car.unlimitedMileage) {
+                add("Unlimited km")
+            }
+        }.distinct()
     }
 }
 

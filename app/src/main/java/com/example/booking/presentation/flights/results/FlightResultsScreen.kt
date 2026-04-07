@@ -55,6 +55,7 @@ import com.example.booking.presentation.stays.common.StayFilterChip
 import com.example.booking.presentation.stays.common.StayFooterBar
 import com.example.booking.ui.components.BookingBackTopBar
 import com.example.booking.ui.components.BookingEmptyState
+import com.example.booking.ui.components.BookingMapNoticeDialog
 import com.example.booking.ui.components.BookingPrimaryButton
 import com.example.booking.ui.components.BookingRoundedCard
 import com.example.booking.ui.components.BookingSheetHandle
@@ -76,6 +77,7 @@ fun FlightResultsScreen(
     var uiState by remember { mutableStateOf(FlightResultsUiState()) }
     var priceAlertEnabled by rememberSaveable { mutableStateOf(false) }
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
+    var showMapDialog by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
         object : FlightResultsContract.View {
@@ -153,7 +155,10 @@ fun FlightResultsScreen(
                 FlightActionChip(
                     text = "Map",
                     icon = Icons.Filled.Map,
-                    onClick = { presenter.recordMapOpened(context) },
+                    onClick = {
+                        presenter.recordMapOpened(context)
+                        showMapDialog = true
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -212,6 +217,12 @@ fun FlightResultsScreen(
     if (showSortSheet) {
         FlightSortSheet(
             onDismissRequest = { showSortSheet = false }
+        )
+    }
+
+    if (showMapDialog) {
+        BookingMapNoticeDialog(
+            onDismissRequest = { showMapDialog = false }
         )
     }
 }
@@ -637,6 +648,12 @@ private fun FlightResultCard(
             text = card.airlineLabel,
             color = BookingTextSecondary,
             modifier = Modifier.padding(top = 12.dp)
+        )
+        Text(
+            text = card.supportingText,
+            color = BookingBlueLight,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 4.dp)
         )
 
         Row(

@@ -30,12 +30,14 @@ data class CarRentalCardUiModel(
     val detailLine: String,
     val transmissionLine: String,
     val locationLine: String,
+    val pickupNote: String,
     val companyName: String,
     val ratingText: String,
     val reviewText: String,
     val priceText: String,
     val originalPriceText: String,
-    val tagLabels: List<String>
+    val tagLabels: List<String>,
+    val imageAssetPath: String? = null
 )
 
 interface CarRentalSortContract {

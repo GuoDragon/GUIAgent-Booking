@@ -16,6 +16,7 @@ data class StayDetailsUiState(
     val hotelId: String? = null,
     val hotelName: String = "",
     val starRating: Int = 0,
+    val reviewScoreText: String = "",
     val ratingText: String = "",
     val reviewText: String = "",
     val address: String = "",

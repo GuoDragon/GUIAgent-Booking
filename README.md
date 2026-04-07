@@ -54,6 +54,7 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - The Search tab is now a multi-product hub for `Stays`, `Flights`, `Flight + Hotel`, and `Car rental`.
 - The `Flight + Hotel` search first shows a combined hub, then branches into the reused dedicated Flights and Stays result flows.
 - All page canvases now use white backgrounds; blue is reserved for accents such as top bars, primary buttons, selected chips, and highlight cards.
+- Stay and car-rental result cards now pull packaged reference photos from `app/src/main/assets/reference_images`; if the demo list is longer than the available images, the extra cards intentionally fall back to blank image tiles.
 - The Search home opens the Stays room-and-guests selector as a bottom sheet, and the `Sort` entry points on result pages now open bottom sheets instead of separate pages.
 - The old standalone Guests and Sort routes have been removed from navigation; those interactions are now sheet-only entry points.
 - Screenshot structure is the visual guide, but rendered content prefers the current local JSON data from `app/src/main/assets/data`.
@@ -85,6 +86,7 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - Stay results `Map` writes `STAY_MAP_OPENED` into `runtime_search_signals.json`.
 - Flight results `Map` writes `FLIGHT_MAP_OPENED` into `runtime_search_signals.json`.
 - Car-rental results `Map` writes `CAR_RENTAL_MAP_OPENED` into `runtime_search_signals.json`.
+- The three implemented result pages also show a lightweight confirmation dialog after `Map` is tapped so the user gets visual feedback without leaving the current screen.
 - Completing a stay booking appends a new `STAY` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
 - Completing a flight booking appends a new `FLIGHT` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
 - Completing a car-rental booking appends a new `CAR_RENTAL` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
@@ -93,6 +95,7 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - Saved lists are grouped from `wishlist.json` using safe fallbacks when referenced content cannot be resolved directly.
 - Personal and account data come from `users.json`.
 - Travel companions come from `travel_companions.json`.
+- Demo-expanded result rows now keep stable IDs while varying supporting labels so repeated cards no longer look completely identical.
 
 ## Build note
 

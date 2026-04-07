@@ -54,7 +54,9 @@ import com.example.booking.presentation.stays.common.StayFilterChip
 import com.example.booking.presentation.stays.common.StayFooterBar
 import com.example.booking.ui.components.BookingBackTopBar
 import com.example.booking.ui.components.BookingEmptyState
+import com.example.booking.ui.components.BookingMapNoticeDialog
 import com.example.booking.ui.components.BookingPrimaryButton
+import com.example.booking.ui.components.BookingReferenceImage
 import com.example.booking.ui.components.BookingRoundedCard
 import com.example.booking.ui.components.BookingSheetHandle
 import com.example.booking.ui.components.BookingStatusChip
@@ -74,6 +76,7 @@ fun CarRentalResultsScreen(
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(CarRentalResultsUiState()) }
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
+    var showMapDialog by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
         object : CarRentalResultsContract.View {
@@ -151,7 +154,10 @@ fun CarRentalResultsScreen(
                 CarRentalActionChip(
                     text = "Map",
                     icon = Icons.Filled.Map,
-                    onClick = { presenter.recordMapOpened(context) },
+                    onClick = {
+                        presenter.recordMapOpened(context)
+                        showMapDialog = true
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -186,6 +192,12 @@ fun CarRentalResultsScreen(
     if (showSortSheet) {
         CarRentalSortSheet(
             onDismissRequest = { showSortSheet = false }
+        )
+    }
+
+    if (showMapDialog) {
+        BookingMapNoticeDialog(
+            onDismissRequest = { showMapDialog = false }
         )
     }
 }
@@ -612,17 +624,47 @@ private fun CarRentalResultCard(
                 )
             }
         }
-        Text(
-            text = card.title,
-            style = MaterialTheme.typography.titleLarge,
-            color = BookingTextPrimary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 12.dp)
-        )
-        Text(text = card.detailLine, color = BookingTextPrimary, modifier = Modifier.padding(top = 10.dp))
-        Text(text = card.transmissionLine, color = BookingTextPrimary, modifier = Modifier.padding(top = 4.dp))
-        Text(text = card.locationLine, color = BookingTextPrimary, modifier = Modifier.padding(top = 10.dp))
-        Text(text = card.companyName, color = BookingBlueLight, modifier = Modifier.padding(top = 10.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = card.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = BookingTextPrimary,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = card.detailLine, color = BookingTextPrimary, modifier = Modifier.padding(top = 10.dp))
+                Text(text = card.transmissionLine, color = BookingTextPrimary, modifier = Modifier.padding(top = 4.dp))
+                Text(
+                    text = card.locationLine,
+                    color = BookingTextPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+                Text(
+                    text = card.pickupNote,
+                    color = BookingTextSecondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = card.companyName,
+                    color = BookingBlueLight,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+            BookingReferenceImage(
+                assetPath = card.imageAssetPath,
+                modifier = Modifier.size(width = 112.dp, height = 86.dp),
+                compact = true,
+                contentDescription = card.title
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -644,9 +686,15 @@ private fun CarRentalResultCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
+                    text = "Price for 1 day",
+                    color = BookingTextSecondary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
                     text = card.originalPriceText,
                     color = Color(0xFFD11C32),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 2.dp)
                 )
                 Text(
                     text = card.priceText,

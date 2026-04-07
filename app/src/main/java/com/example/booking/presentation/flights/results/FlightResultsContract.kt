@@ -28,6 +28,7 @@ data class FlightResultCardUiModel(
     val outboundFlightId: String?,
     val returnFlightId: String?,
     val airlineLabel: String,
+    val supportingText: String,
     val outboundTimeLabel: String,
     val outboundMetaLabel: String,
     val returnTimeLabel: String,

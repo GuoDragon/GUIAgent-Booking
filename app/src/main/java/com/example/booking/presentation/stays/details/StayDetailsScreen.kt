@@ -115,47 +115,62 @@ fun StayDetailsScreen(
             ) {
                 item {
                     BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = uiState.hotelName,
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = BookingTextPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
                         Row(
-                            modifier = Modifier.padding(top = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.Top
                         ) {
-                            repeat(uiState.starRating) {
-                                Icon(
-                                    imageVector = Icons.Filled.Star,
-                                    contentDescription = null,
-                                    tint = Color(0xFFFEBB02),
-                                    modifier = Modifier.size(16.dp)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = uiState.hotelName,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Row(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    repeat(uiState.starRating) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Star,
+                                            contentDescription = null,
+                                            tint = Color(0xFFFEBB02),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = uiState.address,
+                                    color = BookingTextPrimary,
+                                    modifier = Modifier.padding(top = 12.dp)
+                                )
+                                Text(
+                                    text = uiState.locationText,
+                                    color = BookingGreen,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = uiState.reviewText,
+                                    color = BookingTextSecondary,
+                                    modifier = Modifier.padding(top = 10.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            BookingStatusChip(
-                                text = uiState.ratingText,
-                                containerColor = Color(0xFFE3F0FF),
-                                contentColor = BookingBlueLight
-                            )
+                            if (uiState.reviewScoreText.isNotBlank()) {
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = BookingBlueLight
+                                ) {
+                                    Text(
+                                        text = uiState.reviewScoreText,
+                                        color = BookingWhite,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
+                                    )
+                                }
+                            }
                         }
-                        Text(
-                            text = uiState.address,
-                            color = BookingTextPrimary,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                        Text(
-                            text = uiState.locationText,
-                            color = BookingGreen,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                        Text(
-                            text = uiState.reviewText,
-                            color = BookingTextSecondary,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
                     }
                 }
                 item {

@@ -1,6 +1,7 @@
 package com.example.booking.presentation.flights.results
 
 import android.content.Context
+import com.example.booking.common.demo.DemoVisuals
 import com.example.booking.common.format.BookingFormatters
 import com.example.booking.data.DataRepository
 import com.example.booking.model.SearchSignal
@@ -69,12 +70,13 @@ class FlightResultsPresenter(
             outboundFlightId = itinerary.outbound.flightId,
             returnFlightId = itinerary.returnLeg?.flightId,
             airlineLabel = itinerary.outbound.airlineName,
+            supportingText = buildSupportingText(itinerary, index),
             outboundTimeLabel = "${BookingFormatters.formatTime(itinerary.outbound.departureTime)} - ${BookingFormatters.formatTime(itinerary.outbound.arrivalTime)}",
             outboundMetaLabel = "$outboundDate | ${FlightFlowMapper.stopLabel(itinerary.outbound.stops)}",
             returnTimeLabel = itinerary.returnLeg?.let { "${BookingFormatters.formatTime(it.departureTime)} - ${BookingFormatters.formatTime(it.arrivalTime)}" } ?: "No return selected",
             returnMetaLabel = itinerary.returnLeg?.let { "$returnDate | ${FlightFlowMapper.stopLabel(it.stops)}" } ?: "",
             priceText = BookingFormatters.formatCurrency(itinerary.totalPrice, itinerary.currency),
-            badgeText = if (itinerary.outbound.stops == 0) "Best" else "Genius",
+            badgeText = buildBadgeText(itinerary, index),
             stopsLabel = if (itinerary.returnLeg == null) {
                 FlightFlowMapper.stopLabel(itinerary.outbound.stops)
             } else {
@@ -86,6 +88,31 @@ class FlightResultsPresenter(
 
     private fun buildTripLabel(adults: Int, cabinClass: String, departureDate: java.time.LocalDate, returnDate: java.time.LocalDate): String {
         return "${BookingFormatters.formatShortLocalDate(departureDate)} - ${BookingFormatters.formatShortLocalDate(returnDate)} | $adults adult${if (adults == 1) "" else "s"} | $cabinClass"
+    }
+
+    private fun buildBadgeText(
+        itinerary: FlightItinerary,
+        index: Int
+    ): String {
+        val options = if (itinerary.outbound.stops == 0) {
+            listOf("Best", "Popular", "Direct")
+        } else {
+            listOf("Genius", "Value", "Smart choice")
+        }
+        return options[DemoVisuals.stableIndex("${itinerary.itineraryId}:badge:$index", options.size)]
+    }
+
+    private fun buildSupportingText(
+        itinerary: FlightItinerary,
+        index: Int
+    ): String {
+        val options = listOf(
+            "Popular route this week for ${itinerary.outbound.airlineName}.",
+            "Cabin bag included in this demo fare.",
+            "Seats at this price are limited today.",
+            "Balanced pick for price and trip time."
+        )
+        return options[DemoVisuals.stableIndex("${itinerary.itineraryId}:support:$index", options.size)]
     }
 }
 

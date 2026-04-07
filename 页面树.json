@@ -60,30 +60,40 @@
                     }
                 }
             },
-            "Cruises Page": {
-                "Cruise Destination Page": {}
-            },
-            "Airport Taxis Page": {
-                "Pickup Location Page": {},
-                "Destination Page": {},
-                "Pickup Time Page": {},
-                "Passenger Page": {},
+            "Taxi Page": {
+                "Taxi Round-trip Page": {},
+                "Taxi Round-trip Return Time Page": {},
+                "Taxi Pick-up Location Page": {},
+                "Taxi Destination Page": {},
+                "Taxi Time Page": {},
+                "Taxi Passengers Page": {},
                 "Taxi Search Results Page": {
-                    "Contact Information Page": {},
-                    "Trip Overview Page": {},
+                    "Taxi Add Flight Tracking Page": {
+                        "Taxi Choose Flight Page": {},
+                        "Taxi Choose Airlines Flight Page": {},
+                        "Taxi Choose Flight Times Page": {}
+                    },
+                    "Taxi Contact Details Page": {},
+                    "Taxi Summary and Payment Page": {},
                     "Taxi Booking Success Page": {}
                 }
             },
             "Attractions Page": {
                 "Attraction Destination Page": {},
+                "Attraction Date Page": {},
                 "Attraction Search Results Page": {
-                    "Attraction Preview Page": {},
-                    "Attraction Details Page": {},
+                    "Attraction Search Filter Results Page": {},
+                    "Attraction Search City Results Page": {},
+                    "Attraction Search Category Results Page": {},
+                    "Attraction Search Deal and Discounts Results Page": {},
+                    "Attraction Search Review Score Results Page": {},
+                    "Attraction Search Time of Day Results Page": {},
+                    "Attraction Search Languages Results Page": {},
                     "Available Tickets Page": {
                         "Available Ticket Details Page": {
-                            "Personal Information Page": {},
-                            "Payment Page": {},
-                            "Payment Success Page": {}
+                            "Attractions Personal Information Page": {},
+                            "Attractions Payment Page": {},
+                            "Attractions Payment Success Page": {}
                         }
                     }
                 }
