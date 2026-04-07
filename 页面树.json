@@ -1,0 +1,107 @@
+{
+    "Booking Page Tree": {
+        "Search Main Page": {
+            "Stays Page": {
+                "Destination/Landmark/Property Page": {},
+                "Date Page": {},
+                "Room and Guest Selection Page": {},
+                "Stay Search Results Page": {
+                    "Stay Search Sort Results Page": {},
+                    "Stay Search Filter Results Page": {},
+                    "Stay Search Map Results Page": {},
+                    "Stay Details Page": {
+                        "Room Type Page": {
+                            "Your Personal Info": {},
+                            "Booking Page": {
+                                "Stay Booking Success Page": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "Flights Page": {
+                "Departure Airport Page": {},
+                "Destination Airport Page": {},
+                "Flights Date Page": {},
+                "Passenger Information Page": {},
+                "Flight Search Results Page": {
+                    "Flight Search Sort Results Page": {},
+                    "Flight Search Filter Results Page": {},
+                    "Flight Search Map Results Page": {},
+                    "Flight Details Page": {
+                        "Ticket Type Selection Page": {
+                            "Choose Flight Fare Page": {},
+                            "Flight Luggage Selection Page": {
+                                "Flight Luggage Meal Choice Page": {}
+                            },
+                            "Custom Flight Preferences Page": {},
+                            "Flight Traveler Details Page": {
+                                "Flight Traveler Contact Details Page": {}
+                            },
+                            "Flight Booking Success Page": {}
+                        }
+                    }
+                }
+            },
+            "Flight + Hotel Page": {},
+            "Car Rentals Page": {
+                "Pickup Location Page": {},
+                "Car Rental Date Page": {},
+                "Driver Age Page": {},
+                "Car Rental Search Results Page": {
+                    "Car Rental Search Sort Results Page": {},
+                    "Car Rental Search Filter Results Page": {},
+                    "Car Rental Search Map Results Page": {},
+                    "Car Rental Details Page": {
+                        "Full Protection Plan Page": {},
+                        "Add-ons Page": {},
+                        "Car Rental Booking Summary Page": {},
+                        "Car Rental Booking Success Page": {}
+                    }
+                }
+            },
+            "Cruises Page": {
+                "Cruise Destination Page": {}
+            },
+            "Airport Taxis Page": {
+                "Pickup Location Page": {},
+                "Destination Page": {},
+                "Pickup Time Page": {},
+                "Passenger Page": {},
+                "Taxi Search Results Page": {
+                    "Contact Information Page": {},
+                    "Trip Overview Page": {},
+                    "Taxi Booking Success Page": {}
+                }
+            },
+            "Attractions Page": {
+                "Attraction Destination Page": {},
+                "Attraction Search Results Page": {
+                    "Attraction Preview Page": {},
+                    "Attraction Details Page": {},
+                    "Available Tickets Page": {
+                        "Available Ticket Details Page": {
+                            "Personal Information Page": {},
+                            "Payment Page": {},
+                            "Payment Success Page": {}
+                        }
+                    }
+                }
+            }
+        },
+        "Saved Page": {
+            "Wishlist Details Page": {}
+        },
+        "Orders Page": {
+            "Active Orders Page": {},
+            "Order History Page": {},
+            "Cancelled Orders Page": {}
+        },
+        "Login/Register Page": {
+            "Personal Information Page": {},
+            "Travel Companions Page": {
+                "Add Travel Companion Page": {}
+            }
+        }
+    }
+}

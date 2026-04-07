@@ -1,0 +1,11 @@
+[
+  {
+    "userId": "user001",
+    "firstName": "James",
+    "lastName": "Wilson",
+    "email": "james.wilson@email.com",
+    "phone": "+1-555-0142",
+    "avatar": null,
+    "nationality": "US"
+  }
+]

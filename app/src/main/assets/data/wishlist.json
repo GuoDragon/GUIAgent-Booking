@@ -1,0 +1,37 @@
+[
+  {
+    "wishlistId": "wl001",
+    "userId": "user001",
+    "itemType": "HOTEL",
+    "itemId": "htl002",
+    "savedDate": 1709000000000
+  },
+  {
+    "wishlistId": "wl002",
+    "userId": "user001",
+    "itemType": "FLIGHT",
+    "itemId": "flt002",
+    "savedDate": 1710500000000
+  },
+  {
+    "wishlistId": "wl003",
+    "userId": "user001",
+    "itemType": "ATTRACTION",
+    "itemId": "attr002",
+    "savedDate": 1711000000000
+  },
+  {
+    "wishlistId": "wl004",
+    "userId": "user001",
+    "itemType": "CAR_RENTAL",
+    "itemId": "car003",
+    "savedDate": 1712000000000
+  },
+  {
+    "wishlistId": "wl005",
+    "userId": "user001",
+    "itemType": "CRUISE",
+    "itemId": "crs003",
+    "savedDate": 1713500000000
+  }
+]

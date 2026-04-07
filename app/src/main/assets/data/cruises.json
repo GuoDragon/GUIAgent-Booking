@@ -1,0 +1,62 @@
+[
+  {
+    "cruiseId": "crs001",
+    "cruiseLine": "Royal Caribbean",
+    "shipName": "Symphony of the Seas",
+    "destination": "Caribbean",
+    "departurePort": "Miami, FL",
+    "durationNights": 7,
+    "fromPrice": 1200.00,
+    "currency": "USD",
+    "rating": 9.2,
+    "imageUrl": null
+  },
+  {
+    "cruiseId": "crs002",
+    "cruiseLine": "MSC",
+    "shipName": "MSC Seaside",
+    "destination": "Mediterranean",
+    "departurePort": "Barcelona, Spain",
+    "durationNights": 10,
+    "fromPrice": 1800.00,
+    "currency": "USD",
+    "rating": 8.7,
+    "imageUrl": null
+  },
+  {
+    "cruiseId": "crs003",
+    "cruiseLine": "Norwegian",
+    "shipName": "Norwegian Bliss",
+    "destination": "Alaska",
+    "departurePort": "Seattle, WA",
+    "durationNights": 7,
+    "fromPrice": 1500.00,
+    "currency": "USD",
+    "rating": 9.0,
+    "imageUrl": null
+  },
+  {
+    "cruiseId": "crs004",
+    "cruiseLine": "Celebrity",
+    "shipName": "Celebrity Edge",
+    "destination": "Northern Europe",
+    "departurePort": "Southampton, UK",
+    "durationNights": 14,
+    "fromPrice": 3000.00,
+    "currency": "USD",
+    "rating": 9.5,
+    "imageUrl": null
+  },
+  {
+    "cruiseId": "crs005",
+    "cruiseLine": "Carnival",
+    "shipName": "Carnival Celebration",
+    "destination": "Asian",
+    "departurePort": "Singapore",
+    "durationNights": 5,
+    "fromPrice": 500.00,
+    "currency": "USD",
+    "rating": 8.0,
+    "imageUrl": null
+  }
+]

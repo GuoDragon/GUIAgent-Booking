@@ -1,0 +1,50 @@
+[
+  {
+    "airlineId": "arl001",
+    "name": "British Airways",
+    "iataCode": "BA",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl002",
+    "name": "Air France",
+    "iataCode": "AF",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl003",
+    "name": "Delta",
+    "iataCode": "DL",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl004",
+    "name": "ANA",
+    "iataCode": "NH",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl005",
+    "name": "Emirates",
+    "iataCode": "EK",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl006",
+    "name": "KLM",
+    "iataCode": "KL",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl007",
+    "name": "Turkish Airlines",
+    "iataCode": "TK",
+    "logoUrl": null
+  },
+  {
+    "airlineId": "arl008",
+    "name": "Singapore Airlines",
+    "iataCode": "SQ",
+    "logoUrl": null
+  }
+]

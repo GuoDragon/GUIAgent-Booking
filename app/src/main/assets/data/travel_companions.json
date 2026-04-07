@@ -1,0 +1,32 @@
+[
+  {
+    "companionId": "comp001",
+    "userId": "user001",
+    "firstName": "Emily",
+    "lastName": "Chen",
+    "dateOfBirth": "1990-05-14",
+    "nationality": "American",
+    "passportNumber": null,
+    "email": "emily.chen@example.com"
+  },
+  {
+    "companionId": "comp002",
+    "userId": "user001",
+    "firstName": "James",
+    "lastName": "Wilson",
+    "dateOfBirth": "1985-11-23",
+    "nationality": "British",
+    "passportNumber": null,
+    "email": "james.wilson@example.com"
+  },
+  {
+    "companionId": "comp003",
+    "userId": "user001",
+    "firstName": "Sofia",
+    "lastName": "Martinez",
+    "dateOfBirth": "1993-03-08",
+    "nationality": "Spanish",
+    "passportNumber": null,
+    "email": "sofia.martinez@example.com"
+  }
+]

@@ -1,0 +1,302 @@
+[
+  {
+    "ticketId": "tkt001",
+    "attractionId": "att001",
+    "ticketType": "Standard",
+    "description": "General admission to the Louvre Museum with access to all permanent collections.",
+    "price": 22,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt002",
+    "attractionId": "att001",
+    "ticketType": "Skip-the-line",
+    "description": "Priority entry to the Louvre Museum, bypassing the main queue with access to all exhibitions.",
+    "price": 35,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt003",
+    "attractionId": "att001",
+    "ticketType": "VIP",
+    "description": "Exclusive VIP guided tour of the Louvre Museum highlights with a professional art historian.",
+    "price": 80,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt004",
+    "attractionId": "att002",
+    "ticketType": "Standard",
+    "description": "General admission to the Colosseum, Roman Forum, and Palatine Hill.",
+    "price": 18,
+    "currency": "USD",
+    "validDays": 2,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt005",
+    "attractionId": "att002",
+    "ticketType": "Priority",
+    "description": "Fast-track entry to the Colosseum with arena floor access and audioguide included.",
+    "price": 45,
+    "currency": "USD",
+    "validDays": 2,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt006",
+    "attractionId": "att003",
+    "ticketType": "Standard",
+    "description": "General admission to Sagrada Familia with access to the interior and museum.",
+    "price": 30,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt007",
+    "attractionId": "att003",
+    "ticketType": "Skip-the-line",
+    "description": "Skip-the-line entry to Sagrada Familia with guided tour and tower access.",
+    "price": 50,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt008",
+    "attractionId": "att003",
+    "ticketType": "VIP",
+    "description": "Exclusive early morning VIP access to Sagrada Familia before public opening with expert guide.",
+    "price": 90,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt009",
+    "attractionId": "att004",
+    "ticketType": "Standard",
+    "description": "Free general admission to the British Museum permanent collections.",
+    "price": 10,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt010",
+    "attractionId": "att004",
+    "ticketType": "Group",
+    "description": "Guided group tour of the British Museum highlights for up to 10 people.",
+    "price": 60,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt011",
+    "attractionId": "att005",
+    "ticketType": "Standard",
+    "description": "Ferry ticket and access to the Statue of Liberty grounds and pedestal.",
+    "price": 24,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt012",
+    "attractionId": "att005",
+    "ticketType": "Priority",
+    "description": "Priority ferry boarding with access to the Statue of Liberty crown and pedestal.",
+    "price": 38,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt013",
+    "attractionId": "att005",
+    "ticketType": "Family",
+    "description": "Family pack for 2 adults and 2 children including ferry, pedestal access, and audioguide.",
+    "price": 75,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt014",
+    "attractionId": "att006",
+    "ticketType": "Standard",
+    "description": "One-day passport to Tokyo Disneyland with access to all rides and attractions.",
+    "price": 75,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt015",
+    "attractionId": "att006",
+    "ticketType": "VIP",
+    "description": "Two-day VIP pass to Tokyo Disneyland with FastPass priority and reserved parade seating.",
+    "price": 180,
+    "currency": "USD",
+    "validDays": 2,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt016",
+    "attractionId": "att007",
+    "ticketType": "Standard",
+    "description": "Timed entry ticket to the Anne Frank House including the museum and secret annex.",
+    "price": 16,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt017",
+    "attractionId": "att007",
+    "ticketType": "Skip-the-line",
+    "description": "Skip-the-line entry to the Anne Frank House with introductory program and multimedia guide.",
+    "price": 28,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt018",
+    "attractionId": "att008",
+    "ticketType": "Standard",
+    "description": "Standard helicopter tour over the Grand Canyon with approximately 30 minutes of flight time.",
+    "price": 100,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt019",
+    "attractionId": "att008",
+    "ticketType": "VIP",
+    "description": "Extended VIP helicopter tour with canyon floor landing, champagne toast, and hotel pickup.",
+    "price": 250,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt020",
+    "attractionId": "att009",
+    "ticketType": "Standard",
+    "description": "Access to the At the Top observation deck on the 124th and 125th floors of the Burj Khalifa.",
+    "price": 40,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt021",
+    "attractionId": "att009",
+    "ticketType": "Priority",
+    "description": "Fast-track access to the 124th, 125th, and 148th floor SKY lounge with refreshments.",
+    "price": 95,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt022",
+    "attractionId": "att009",
+    "ticketType": "VIP",
+    "description": "Sunset VIP experience at the Burj Khalifa top floor with premium lounge and gourmet snacks.",
+    "price": 150,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt023",
+    "attractionId": "att010",
+    "ticketType": "Standard",
+    "description": "General admission to the Acropolis archaeological site including the Parthenon.",
+    "price": 22,
+    "currency": "USD",
+    "validDays": 3,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt024",
+    "attractionId": "att010",
+    "ticketType": "Group",
+    "description": "Guided walking tour of the Acropolis and surroundings for groups up to 15 people.",
+    "price": 55,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt025",
+    "attractionId": "att011",
+    "ticketType": "Standard",
+    "description": "Daytime climb of the Sydney Harbour Bridge with experienced climb leader and group photo.",
+    "price": 85,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt026",
+    "attractionId": "att011",
+    "ticketType": "Priority",
+    "description": "Twilight climb of the Sydney Harbour Bridge with sunset views and commemorative certificate.",
+    "price": 120,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt027",
+    "attractionId": "att011",
+    "ticketType": "VIP",
+    "description": "Ultimate summit climb with exclusive behind-the-scenes access and private group experience.",
+    "price": 175,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": false
+  },
+  {
+    "ticketId": "tkt028",
+    "attractionId": "att012",
+    "ticketType": "Standard",
+    "description": "General admission to the Prado Museum with access to the permanent collection.",
+    "price": 17,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt029",
+    "attractionId": "att012",
+    "ticketType": "Skip-the-line",
+    "description": "Skip-the-line entry to the Prado Museum with audioguide and access to temporary exhibitions.",
+    "price": 32,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt030",
+    "attractionId": "att012",
+    "ticketType": "Family",
+    "description": "Family ticket for 2 adults and up to 3 children with interactive family trail activity booklet.",
+    "price": 45,
+    "currency": "USD",
+    "validDays": 2,
+    "cancellable": true
+  }
+]

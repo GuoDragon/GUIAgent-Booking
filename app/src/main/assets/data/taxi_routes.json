@@ -1,0 +1,82 @@
+[
+  {
+    "routeId": "taxi001",
+    "pickupLocation": "John F. Kennedy International Airport",
+    "destination": "Manhattan City Center",
+    "vehicleType": "Standard",
+    "maxPassengers": 4,
+    "price": 55.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 45
+  },
+  {
+    "routeId": "taxi002",
+    "pickupLocation": "Los Angeles International Airport",
+    "destination": "Downtown Los Angeles Hotel District",
+    "vehicleType": "Premium",
+    "maxPassengers": 4,
+    "price": 75.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 35
+  },
+  {
+    "routeId": "taxi003",
+    "pickupLocation": "London Heathrow Airport",
+    "destination": "Central London",
+    "vehicleType": "Luxury",
+    "maxPassengers": 3,
+    "price": 120.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 50
+  },
+  {
+    "routeId": "taxi004",
+    "pickupLocation": "Charles de Gaulle Airport",
+    "destination": "Paris City Center",
+    "vehicleType": "Standard",
+    "maxPassengers": 4,
+    "price": 60.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 40
+  },
+  {
+    "routeId": "taxi005",
+    "pickupLocation": "Dubai International Airport",
+    "destination": "Downtown Dubai Hotel Area",
+    "vehicleType": "Premium",
+    "maxPassengers": 4,
+    "price": 35.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 20
+  },
+  {
+    "routeId": "taxi006",
+    "pickupLocation": "Tokyo Narita Airport",
+    "destination": "Shinjuku City Center",
+    "vehicleType": "Van",
+    "maxPassengers": 8,
+    "price": 95.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 60
+  },
+  {
+    "routeId": "taxi007",
+    "pickupLocation": "Barcelona El Prat Airport",
+    "destination": "Las Ramblas Hotel District",
+    "vehicleType": "Standard",
+    "maxPassengers": 4,
+    "price": 40.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 25
+  },
+  {
+    "routeId": "taxi008",
+    "pickupLocation": "Singapore Changi Airport",
+    "destination": "Marina Bay City Center",
+    "vehicleType": "Van",
+    "maxPassengers": 6,
+    "price": 25.00,
+    "currency": "USD",
+    "estimatedDurationMinutes": 25
+  }
+]

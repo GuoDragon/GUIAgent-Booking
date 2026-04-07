@@ -1,0 +1,92 @@
+[
+  {
+    "code": "LHR",
+    "name": "Heathrow Airport",
+    "city": "London",
+    "country": "United Kingdom"
+  },
+  {
+    "code": "CDG",
+    "name": "Charles de Gaulle Airport",
+    "city": "Paris",
+    "country": "France"
+  },
+  {
+    "code": "JFK",
+    "name": "John F. Kennedy International Airport",
+    "city": "New York",
+    "country": "United States"
+  },
+  {
+    "code": "NRT",
+    "name": "Narita International Airport",
+    "city": "Tokyo",
+    "country": "Japan"
+  },
+  {
+    "code": "BCN",
+    "name": "Josep Tarradellas Barcelona-El Prat Airport",
+    "city": "Barcelona",
+    "country": "Spain"
+  },
+  {
+    "code": "DXB",
+    "name": "Dubai International Airport",
+    "city": "Dubai",
+    "country": "United Arab Emirates"
+  },
+  {
+    "code": "FCO",
+    "name": "Leonardo da Vinci-Fiumicino Airport",
+    "city": "Rome",
+    "country": "Italy"
+  },
+  {
+    "code": "AMS",
+    "name": "Amsterdam Airport Schiphol",
+    "city": "Amsterdam",
+    "country": "Netherlands"
+  },
+  {
+    "code": "BKK",
+    "name": "Suvarnabhumi Airport",
+    "city": "Bangkok",
+    "country": "Thailand"
+  },
+  {
+    "code": "SYD",
+    "name": "Sydney Kingsford Smith Airport",
+    "city": "Sydney",
+    "country": "Australia"
+  },
+  {
+    "code": "IST",
+    "name": "Istanbul Airport",
+    "city": "Istanbul",
+    "country": "Turkey"
+  },
+  {
+    "code": "PRG",
+    "name": "Vaclav Havel Airport Prague",
+    "city": "Prague",
+    "country": "Czech Republic"
+  },
+  {
+    "code": "VIE",
+    "name": "Vienna International Airport",
+    "city": "Vienna",
+    "country": "Austria"
+  },
+  {
+    "code": "SIN",
+    "name": "Singapore Changi Airport",
+    "city": "Singapore",
+    "country": "Singapore"
+  },
+  {
+    "code": "LIS",
+    "name": "Humberto Delgado Airport",
+    "city": "Lisbon",
+    "country": "Portugal"
+  }
+]
