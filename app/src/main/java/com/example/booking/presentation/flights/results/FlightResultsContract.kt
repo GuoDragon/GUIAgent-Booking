@@ -12,6 +12,7 @@ interface FlightResultsContract {
     interface Presenter {
         fun loadData(context: Context)
         fun recordMapOpened(context: Context)
+        fun selectItinerary(context: Context, outboundId: String?, returnId: String?)
     }
 }
 

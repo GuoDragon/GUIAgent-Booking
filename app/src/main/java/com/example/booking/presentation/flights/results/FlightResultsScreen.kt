@@ -48,7 +48,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.common.FlightFilterState
 import com.example.booking.presentation.flights.common.FlightSortOption
 import com.example.booking.presentation.stays.common.StayFilterChip
@@ -71,7 +70,7 @@ import com.example.booking.ui.theme.BookingWhite
 fun FlightResultsScreen(
     onBackClick: () -> Unit,
     onFilterClick: () -> Unit,
-    onFlightClick: (String?, String?) -> Unit
+    onFlightClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(FlightResultsUiState()) }
@@ -88,7 +87,7 @@ fun FlightResultsScreen(
     }
     val presenter = remember(view) { FlightResultsPresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -206,7 +205,10 @@ fun FlightResultsScreen(
                     items(uiState.cards, key = { it.cardId }) { card ->
                         FlightResultCard(
                             card = card,
-                            onClick = { onFlightClick(card.outboundFlightId, card.returnFlightId) }
+                            onClick = {
+                                presenter.selectItinerary(context, card.outboundFlightId, card.returnFlightId)
+                                onFlightClick()
+                            }
                         )
                     }
                 }
@@ -483,7 +485,7 @@ fun FlightDetailsScreen(
     }
     val presenter = remember(view) { FlightDetailsPresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -524,7 +526,7 @@ fun FlightDetailsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = uiState.title,
                             style = MaterialTheme.typography.headlineSmall,
@@ -539,7 +541,7 @@ fun FlightDetailsScreen(
                     }
                 }
                 items(uiState.segments) { segment ->
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = segment.header,
                             style = MaterialTheme.typography.titleMedium,

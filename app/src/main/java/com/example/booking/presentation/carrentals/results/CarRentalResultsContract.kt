@@ -12,6 +12,7 @@ interface CarRentalResultsContract {
     interface Presenter {
         fun loadData(context: Context)
         fun recordMapOpened(context: Context)
+        fun selectCar(context: Context, carId: String)
     }
 }
 

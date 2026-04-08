@@ -6,6 +6,7 @@ object DemoVisuals {
 
     private const val StayDirectory = "reference_images/stays"
     private const val CarRentalDirectory = "reference_images/car_rentals"
+    private const val AttractionDirectory = "reference_images/attractions"
 
     fun stayImageAssignments(
         context: Context,
@@ -18,6 +19,12 @@ object DemoVisuals {
         seed: String,
         cardCount: Int
     ): List<String?> = buildAssignments(context, CarRentalDirectory, seed, cardCount)
+
+    fun attractionImageAssignments(
+        context: Context,
+        seed: String,
+        cardCount: Int
+    ): List<String?> = buildAssignments(context, AttractionDirectory, seed, cardCount)
 
     fun stableIndex(
         key: String,

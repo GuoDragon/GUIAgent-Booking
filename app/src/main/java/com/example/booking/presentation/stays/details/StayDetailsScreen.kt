@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,13 +37,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.stays.common.StayFooterBar
-import com.example.booking.presentation.stays.common.StayPhotoPlaceholder
 import com.example.booking.presentation.stays.common.StaySummaryInfoCard
 import com.example.booking.ui.components.BookingBackTopBar
 import com.example.booking.ui.components.BookingEmptyState
 import com.example.booking.ui.components.BookingPrimaryButton
+import com.example.booking.ui.components.BookingReferenceImage
 import com.example.booking.ui.components.BookingRoundedCard
 import com.example.booking.ui.components.BookingSectionHeader
 import com.example.booking.ui.components.BookingStatusChip
@@ -60,7 +59,6 @@ fun StayDetailsScreen(
     onSelectRoomsClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
-    val selectedHotelId = StayDraftStore.snapshot().selectedHotelId
     var uiState by remember { mutableStateOf(StayDetailsUiState()) }
 
     val view = remember {
@@ -72,7 +70,7 @@ fun StayDetailsScreen(
     }
     val presenter = remember(view) { StayDetailsPresenter(view) }
 
-    LaunchedEffect(presenter, context, selectedHotelId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -174,7 +172,7 @@ fun StayDetailsScreen(
                     }
                 }
                 item {
-                    StayPhotoGallery(labels = uiState.photoLabels)
+                    StayPhotoGallery(assetPaths = uiState.photoAssetPaths)
                 }
                 item {
                     BookingRoundedCard {
@@ -190,7 +188,7 @@ fun StayDetailsScreen(
                 item {
                     Column {
                         BookingSectionHeader(title = "Property highlights")
-                        AmenityGrid(
+                        PropertyHighlightsRow(
                             amenities = uiState.highlightAmenities,
                             modifier = Modifier.padding(top = 12.dp)
                         )
@@ -216,6 +214,58 @@ fun StayDetailsScreen(
                         description = "${uiState.guestSummary}\n${uiState.nightsLabel}\n${uiState.roomPreviewText}"
                     )
                 }
+                item {
+                    BookingSectionHeader(
+                        title = "Guest reviews",
+                        subtitle = "Local demo comments for this property"
+                    )
+                }
+                items(uiState.guestReviews) { review ->
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = review.reviewer,
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = review.meta,
+                                    color = BookingTextSecondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = BookingBlueLight
+                            ) {
+                                Text(
+                                    text = review.scoreText,
+                                    color = BookingWhite,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                )
+                            }
+                        }
+                        Text(
+                            text = review.title,
+                            color = BookingTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 12.dp)
+                        )
+                        Text(
+                            text = review.detail,
+                            color = BookingTextSecondary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 6.dp)
+                        )
+                    }
+                }
             }
         }
     }
@@ -224,10 +274,9 @@ fun StayDetailsScreen(
 @Composable
 fun StayRoomTypeScreen(
     onBackClick: () -> Unit,
-    onRoomSelected: (String) -> Unit
+    onRoomSelected: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
-    val selectedHotelId = StayDraftStore.snapshot().selectedHotelId
     var uiState by remember { mutableStateOf(StayRoomTypeUiState()) }
 
     val view = remember {
@@ -239,7 +288,7 @@ fun StayRoomTypeScreen(
     }
     val presenter = remember(view) { StayRoomTypePresenter(view) }
 
-    LaunchedEffect(presenter, context, selectedHotelId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -296,10 +345,11 @@ fun StayRoomTypeScreen(
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
                             }
-                            StayPhotoPlaceholder(
-                                title = room.title,
+                            BookingReferenceImage(
+                                assetPath = room.imageAssetPath,
                                 modifier = Modifier.size(width = 88.dp, height = 72.dp),
-                                compact = true
+                                compact = true,
+                                contentDescription = room.title
                             )
                         }
                         Text(
@@ -347,7 +397,10 @@ fun StayRoomTypeScreen(
                                     text = "Select",
                                     enabled = room.enabled,
                                     modifier = Modifier.padding(top = 12.dp),
-                                    onClick = { onRoomSelected(room.roomId) }
+                                    onClick = {
+                                        presenter.selectRoom(room.roomId)
+                                        onRoomSelected()
+                                    }
                                 )
                             }
                         }
@@ -359,31 +412,38 @@ fun StayRoomTypeScreen(
 }
 
 @Composable
-private fun StayPhotoGallery(labels: List<String>) {
-    val photoLabels = (labels + List(6) { "Stay" }).take(6)
+private fun StayPhotoGallery(assetPaths: List<String?>) {
+    val galleryAssetPaths = if (assetPaths.isEmpty()) {
+        List(6) { null }
+    } else {
+        List(6) { index -> assetPaths[index % assetPaths.size] }
+    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            StayPhotoPlaceholder(
-                title = photoLabels[0],
+            BookingReferenceImage(
+                assetPath = galleryAssetPaths[0],
                 modifier = Modifier
                     .weight(1f)
-                    .height(168.dp)
+                    .height(168.dp),
+                contentDescription = "Stay gallery photo"
             )
-            StayPhotoPlaceholder(
-                title = photoLabels[1],
+            BookingReferenceImage(
+                assetPath = galleryAssetPaths[1],
                 modifier = Modifier
                     .weight(1f)
-                    .height(168.dp)
+                    .height(168.dp),
+                contentDescription = "Stay gallery photo"
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            photoLabels.drop(2).forEach { label ->
-                StayPhotoPlaceholder(
-                    title = label,
+            galleryAssetPaths.drop(2).forEach { assetPath ->
+                BookingReferenceImage(
+                    assetPath = assetPath,
                     modifier = Modifier
                         .weight(1f)
                         .height(100.dp),
-                    compact = true
+                    compact = true,
+                    contentDescription = "Stay gallery photo"
                 )
             }
         }
@@ -391,50 +451,42 @@ private fun StayPhotoGallery(labels: List<String>) {
 }
 
 @Composable
-private fun AmenityGrid(
+private fun PropertyHighlightsRow(
     amenities: List<String>,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    LazyRow(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        amenities.chunked(2).forEach { rowItems ->
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                rowItems.forEach { amenity ->
-                    Surface(
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        color = BookingWhite,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, BookingGray)
+        items(amenities) { amenity ->
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = BookingWhite,
+                border = androidx.compose.foundation.BorderStroke(1.dp, BookingGray)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(Color(0xFFF3F6FB), RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .background(Color(0xFFF3F6FB), RoundedCornerShape(10.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = amenity.take(1).uppercase(),
-                                    color = BookingBlueLight,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                            Text(
-                                text = amenity,
-                                color = BookingTextPrimary,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 10.dp)
-                            )
-                        }
+                        Text(
+                            text = amenity.take(1).uppercase(),
+                            color = BookingBlueLight,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                }
-                if (rowItems.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = amenity,
+                        color = BookingTextPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
                 }
             }
         }

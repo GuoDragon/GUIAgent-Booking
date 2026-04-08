@@ -13,7 +13,6 @@ import com.example.booking.presentation.addcompanion.AddTravelCompanionScreen
 import com.example.booking.presentation.attractions.booking.AttractionPaymentScreen
 import com.example.booking.presentation.attractions.booking.AttractionPaymentSuccessScreen
 import com.example.booking.presentation.attractions.booking.AttractionPersonalInfoScreen
-import com.example.booking.presentation.attractions.common.AttractionDraftStore
 import com.example.booking.presentation.attractions.details.AttractionDetailsScreen
 import com.example.booking.presentation.attractions.details.AttractionPreviewScreen
 import com.example.booking.presentation.attractions.details.AttractionTicketDetailsScreen
@@ -23,7 +22,6 @@ import com.example.booking.presentation.attractions.input.AttractionDestinationS
 import com.example.booking.presentation.attractions.results.AttractionResultsScreen
 import com.example.booking.presentation.carrentals.booking.CarRentalBookingSuccessScreen
 import com.example.booking.presentation.carrentals.booking.CarRentalBookingSummaryScreen
-import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.carrentals.results.CarRentalDetailsScreen
 import com.example.booking.presentation.carrentals.results.CarRentalFilterScreen
 import com.example.booking.presentation.carrentals.results.CarRentalResultsScreen
@@ -36,7 +34,6 @@ import com.example.booking.presentation.flights.booking.FlightMealChoiceScreen
 import com.example.booking.presentation.flights.booking.FlightSeatSelectionScreen
 import com.example.booking.presentation.flights.booking.FlightTravelerContactScreen
 import com.example.booking.presentation.flights.booking.FlightTravelerDetailsScreen
-import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.results.FlightDetailsScreen
 import com.example.booking.presentation.flights.results.FlightFilterScreen
 import com.example.booking.presentation.flights.results.FlightResultsScreen
@@ -48,7 +45,6 @@ import com.example.booking.presentation.search.SearchScreen
 import com.example.booking.presentation.stays.booking.StayBookingOverviewScreen
 import com.example.booking.presentation.stays.booking.StayBookingSuccessScreen
 import com.example.booking.presentation.stays.booking.StayPersonalInfoScreen
-import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.stays.details.StayDetailsScreen
 import com.example.booking.presentation.stays.details.StayRoomTypeScreen
 import com.example.booking.presentation.stays.input.StayDateScreen
@@ -56,6 +52,8 @@ import com.example.booking.presentation.stays.input.StayDestinationScreen
 import com.example.booking.presentation.stays.results.StayFilterScreen
 import com.example.booking.presentation.stays.results.StayResultsScreen
 import com.example.booking.presentation.taxi.booking.TaxiBookingSuccessScreen
+import com.example.booking.presentation.taxi.booking.TaxiAddFlightTrackingScreen
+import com.example.booking.presentation.taxi.booking.TaxiChooseFlightScreen
 import com.example.booking.presentation.taxi.booking.TaxiContactDetailsScreen
 import com.example.booking.presentation.taxi.booking.TaxiOverviewScreen
 import com.example.booking.presentation.taxi.input.TaxiDestinationScreen
@@ -85,10 +83,6 @@ fun BookingNavGraph(
                 onFlightHotelSearchClick = { navController.navigate(BookingRoutes.FlightPlusHotelHub) },
                 onCarDateClick = { navController.navigate(BookingRoutes.CarRentalDate) },
                 onCarSearchClick = { navController.navigate(BookingRoutes.CarRentalResults) },
-                onTaxiPickupClick = { navController.navigate(BookingRoutes.TaxiPickupLocation) },
-                onTaxiDestinationClick = { navController.navigate(BookingRoutes.TaxiDestination) },
-                onTaxiTimeClick = { navController.navigate(BookingRoutes.TaxiTime) },
-                onTaxiPassengersClick = { navController.navigate(BookingRoutes.TaxiPassengers) },
                 onTaxiSearchClick = { navController.navigate(BookingRoutes.TaxiResults) },
                 onAttractionDestinationClick = { navController.navigate(BookingRoutes.AttractionDestination) },
                 onAttractionDateClick = { navController.navigate(BookingRoutes.AttractionDate) },
@@ -131,8 +125,7 @@ fun BookingNavGraph(
             StayResultsScreen(
                 onBackClick = { navController.popBackStack() },
                 onFilterClick = { navController.navigate(BookingRoutes.StayFilter) },
-                onHotelClick = { hotelId ->
-                    StayDraftStore.selectHotel(hotelId)
+                onHotelClick = {
                     navController.navigate(BookingRoutes.StayDetails)
                 }
             )
@@ -152,8 +145,7 @@ fun BookingNavGraph(
         composable(BookingRoutes.StayRoomType) {
             StayRoomTypeScreen(
                 onBackClick = { navController.popBackStack() },
-                onRoomSelected = { roomId ->
-                    StayDraftStore.selectRoom(roomId)
+                onRoomSelected = {
                     navController.navigate(BookingRoutes.StayPersonalInfo)
                 }
             )
@@ -190,7 +182,7 @@ fun BookingNavGraph(
                     }
                 },
                 onSearchAgainClick = {
-                    navController.navigate(BookingRoutes.Search) {
+                    navController.navigate(BookingRoutes.StayResults) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -209,8 +201,7 @@ fun BookingNavGraph(
             FlightResultsScreen(
                 onBackClick = { navController.popBackStack() },
                 onFilterClick = { navController.navigate(BookingRoutes.FlightFilter) },
-                onFlightClick = { outboundId, returnId ->
-                    FlightDraftStore.selectItinerary(outboundId, returnId)
+                onFlightClick = {
                     navController.navigate(BookingRoutes.FlightDetails)
                 }
             )
@@ -281,7 +272,7 @@ fun BookingNavGraph(
                     }
                 },
                 onSearchAgainClick = {
-                    navController.navigate(BookingRoutes.Search) {
+                    navController.navigate(BookingRoutes.FlightResults) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -307,8 +298,7 @@ fun BookingNavGraph(
             CarRentalResultsScreen(
                 onBackClick = { navController.popBackStack() },
                 onFilterClick = { navController.navigate(BookingRoutes.CarRentalFilter) },
-                onCarClick = { carId ->
-                    CarRentalDraftStore.selectCar(carId)
+                onCarClick = {
                     navController.navigate(BookingRoutes.CarRentalDetails)
                 }
             )
@@ -351,7 +341,7 @@ fun BookingNavGraph(
                     }
                 },
                 onSearchAgainClick = {
-                    navController.navigate(BookingRoutes.Search) {
+                    navController.navigate(BookingRoutes.CarRentalResults) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -381,7 +371,20 @@ fun BookingNavGraph(
         composable(BookingRoutes.TaxiResults) {
             TaxiResultsScreen(
                 onBackClick = { navController.popBackStack() },
+                onContinueClick = { navController.navigate(BookingRoutes.TaxiAddFlightTracking) }
+            )
+        }
+        composable(BookingRoutes.TaxiAddFlightTracking) {
+            TaxiAddFlightTrackingScreen(
+                onBackClick = { navController.popBackStack() },
+                onChooseFlightClick = { navController.navigate(BookingRoutes.TaxiChooseFlight) },
                 onContinueClick = { navController.navigate(BookingRoutes.TaxiContactDetails) }
+            )
+        }
+        composable(BookingRoutes.TaxiChooseFlight) {
+            TaxiChooseFlightScreen(
+                onBackClick = { navController.popBackStack() },
+                onFlightSelected = { navController.popBackStack() }
             )
         }
         composable(BookingRoutes.TaxiContactDetails) {
@@ -416,7 +419,7 @@ fun BookingNavGraph(
                     }
                 },
                 onSearchAgainClick = {
-                    navController.navigate(BookingRoutes.Search) {
+                    navController.navigate(BookingRoutes.TaxiResults) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -437,8 +440,7 @@ fun BookingNavGraph(
         composable(BookingRoutes.AttractionResults) {
             AttractionResultsScreen(
                 onBackClick = { navController.popBackStack() },
-                onAttractionClick = { attractionId ->
-                    AttractionDraftStore.selectAttraction(attractionId)
+                onAttractionClick = {
                     navController.navigate(BookingRoutes.AttractionPreview)
                 }
             )
@@ -458,8 +460,7 @@ fun BookingNavGraph(
         composable(BookingRoutes.AttractionTickets) {
             AttractionTicketsScreen(
                 onBackClick = { navController.popBackStack() },
-                onTicketClick = { ticketId ->
-                    AttractionDraftStore.selectTicket(ticketId)
+                onTicketClick = {
                     navController.navigate(BookingRoutes.AttractionTicketDetails)
                 }
             )
@@ -502,7 +503,7 @@ fun BookingNavGraph(
                     }
                 },
                 onSearchAgainClick = {
-                    navController.navigate(BookingRoutes.Search) {
+                    navController.navigate(BookingRoutes.AttractionResults) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true

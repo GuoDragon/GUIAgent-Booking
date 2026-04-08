@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -48,6 +50,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -353,7 +356,7 @@ fun CarRentalSearchContent(
     onReturnToSameLocationChanged: (Boolean) -> Unit,
     onPickupLocationClick: () -> Unit,
     onDateClick: () -> Unit,
-    onDriverAgeClick: () -> Unit,
+    onDriverAgeChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
     LazyColumn(
@@ -398,11 +401,22 @@ fun CarRentalSearchContent(
                             text = uiState.carDateLabel,
                             onClick = onDateClick
                         )
-                        SearchFieldRow(
-                            icon = Icons.Outlined.PersonOutline,
-                            text = uiState.carDriverAgeLabel,
-                            showDivider = false,
-                            onClick = onDriverAgeClick
+                        OutlinedTextField(
+                            value = uiState.carDriverAgeText,
+                            onValueChange = { onDriverAgeChange(it.filter(Char::isDigit)) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp),
+                            label = { Text("Driver's age") },
+                            placeholder = { Text("30") },
+                            singleLine = true,
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.PersonOutline,
+                                    contentDescription = null
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         BookingPrimaryButton(text = "Search", onClick = onSearchClick)
@@ -433,6 +447,7 @@ fun TaxiSearchContent(
     onPickupLocationClick: () -> Unit,
     onDestinationClick: () -> Unit,
     onTimeClick: () -> Unit,
+    onReturnTimeClick: () -> Unit,
     onPassengersClick: () -> Unit,
     onSearchClick: () -> Unit
 ) {
@@ -488,6 +503,13 @@ fun TaxiSearchContent(
                             text = uiState.taxiTimeLabel,
                             onClick = onTimeClick
                         )
+                        if (uiState.taxiTripType == TaxiTripType.RoundTrip) {
+                            SearchFieldRow(
+                                icon = Icons.Filled.CalendarToday,
+                                text = uiState.taxiReturnTimeLabel,
+                                onClick = onReturnTimeClick
+                            )
+                        }
                         SearchFieldRow(
                             icon = Icons.Outlined.PersonOutline,
                             text = uiState.taxiPassengerLabel,

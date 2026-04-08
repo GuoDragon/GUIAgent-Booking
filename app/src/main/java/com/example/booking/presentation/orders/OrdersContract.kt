@@ -1,6 +1,7 @@
 package com.example.booking.presentation.orders
 
 import android.content.Context
+import kotlinx.coroutines.flow.StateFlow
 
 interface OrdersContract {
     interface View {
@@ -8,7 +9,14 @@ interface OrdersContract {
     }
 
     interface Presenter {
+        fun observeRuntimeVersion(): StateFlow<Int>
         fun loadData(context: Context)
+        fun saveHotelReview(
+            context: Context,
+            orderId: String,
+            rating: Int,
+            comment: String
+        )
     }
 }
 
@@ -26,5 +34,10 @@ data class OrderCardUiModel(
     val guestLabel: String,
     val totalPrice: String,
     val bookedOn: String,
-    val status: String
+    val status: String,
+    val showReviewAction: Boolean = false,
+    val reviewActionLabel: String = "",
+    val reviewRating: Int? = null,
+    val reviewComment: String = "",
+    val reviewUpdatedOn: String = ""
 )

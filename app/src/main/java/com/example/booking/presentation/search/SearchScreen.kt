@@ -11,20 +11,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.example.booking.presentation.attractions.common.AttractionDraftStore
-import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
-import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraft
-import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraftStore
-import com.example.booking.presentation.flights.common.FlightDraftStore
-import com.example.booking.presentation.flights.common.FlightTripType
-import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.stays.input.StayGuestsSheet
-import com.example.booking.presentation.taxi.common.TaxiDraftStore
 import com.example.booking.presentation.taxi.common.TaxiTripType
 import com.example.booking.ui.components.BookingHomeTopBar
 import com.example.booking.ui.components.BookingTopBarAction
-import java.time.LocalDate
 
 @Composable
 fun SearchScreen(
@@ -36,26 +27,21 @@ fun SearchScreen(
     onFlightHotelSearchClick: () -> Unit,
     onCarDateClick: () -> Unit,
     onCarSearchClick: () -> Unit,
-    onTaxiPickupClick: () -> Unit,
-    onTaxiDestinationClick: () -> Unit,
-    onTaxiTimeClick: () -> Unit,
-    onTaxiPassengersClick: () -> Unit,
     onTaxiSearchClick: () -> Unit,
     onAttractionDestinationClick: () -> Unit,
     onAttractionDateClick: () -> Unit,
     onAttractionSearchClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
-    val stayDraft = StayDraftStore.snapshot()
-    val flightDraft = FlightDraftStore.snapshot()
-    val flightHotelDraft = FlightPlusHotelDraftStore.snapshot()
-    val carDraft = CarRentalDraftStore.snapshot()
-    val taxiDraft = TaxiDraftStore.snapshot()
-    val attractionDraft = AttractionDraftStore.snapshot()
     var selectedProductName by rememberSaveable { mutableStateOf(SearchProduct.Stays.name) }
     val selectedProduct = remember(selectedProductName) { SearchProduct.valueOf(selectedProductName) }
     var uiState by remember { mutableStateOf(SearchUiState()) }
     var showStayGuestsSheet by rememberSaveable { mutableStateOf(false) }
+    var showTaxiRoutePlanner by rememberSaveable { mutableStateOf(false) }
+    var taxiRoutePlannerFocusName by rememberSaveable { mutableStateOf(TaxiRoutePlannerFocus.Pickup.name) }
+    var showTaxiOutboundTimeSheet by rememberSaveable { mutableStateOf(false) }
+    var showTaxiReturnTimeSheet by rememberSaveable { mutableStateOf(false) }
+    var showTaxiPassengersSheet by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
         object : SearchContract.View {
@@ -66,7 +52,7 @@ fun SearchScreen(
     }
     val presenter = remember(view) { SearchPresenter(view) }
 
-    LaunchedEffect(presenter, context, stayDraft, flightDraft, flightHotelDraft, carDraft, taxiDraft, attractionDraft) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -74,6 +60,12 @@ fun SearchScreen(
         selectedProductName = product.name
         if (product != SearchProduct.Stays) {
             showStayGuestsSheet = false
+        }
+        if (product != SearchProduct.Taxi) {
+            showTaxiRoutePlanner = false
+            showTaxiOutboundTimeSheet = false
+            showTaxiReturnTimeSheet = false
+            showTaxiPassengersSheet = false
         }
     }
 
@@ -91,12 +83,6 @@ fun SearchScreen(
     }
 
     fun nextCabin(currentValue: String): String = nextFromList(currentValue, uiState.flightCabinOptions)
-
-    fun updateFlightHotelDraft(transform: (FlightPlusHotelDraft) -> FlightPlusHotelDraft) {
-        FlightPlusHotelDraftStore.update { current ->
-            normalizeFlightHotelDraft(transform(current), uiState.flightAirports)
-        }
-    }
 
     androidx.compose.material3.Scaffold(
         topBar = {
@@ -125,7 +111,7 @@ fun SearchScreen(
                     onStaySearchClick()
                 },
                 onDestinationCardClick = { destination ->
-                    presenter.applyFeaturedDestination(destination)
+                    presenter.applyFeaturedDestination(context, destination)
                     presenter.submitStaySearch(context)
                     onStaySearchClick()
                 }
@@ -136,47 +122,41 @@ fun SearchScreen(
                 topPadding = innerPadding.calculateTopPadding(),
                 onProductSelected = ::selectProduct,
                 onTripTypeSelected = { tripType ->
-                    FlightDraftStore.update { draft -> draft.copy(tripType = tripType) }
+                    presenter.selectFlightTripType(context, tripType)
                 },
                 onDepartureClick = {
-                    FlightDraftStore.update { draft ->
-                        draft.copy(
-                            departureAirportCode = nextAirportCode(
-                                currentCode = draft.departureAirportCode,
-                                excludedCode = draft.arrivalAirportCode
-                            )
+                    presenter.selectFlightDepartureAirport(
+                        context = context,
+                        airportCode = nextAirportCode(
+                            currentCode = uiState.flightDepartureCode,
+                            excludedCode = uiState.flightArrivalCode
                         )
-                    }
+                    )
                 },
                 onArrivalClick = {
-                    FlightDraftStore.update { draft ->
-                        draft.copy(
-                            arrivalAirportCode = nextAirportCode(
-                                currentCode = draft.arrivalAirportCode,
-                                excludedCode = draft.departureAirportCode
-                            )
+                    presenter.selectFlightArrivalAirport(
+                        context = context,
+                        airportCode = nextAirportCode(
+                            currentCode = uiState.flightArrivalCode,
+                            excludedCode = uiState.flightDepartureCode
                         )
-                    }
+                    )
                 },
                 onSwapAirportsClick = {
-                    FlightDraftStore.update { draft ->
-                        draft.copy(
-                            departureAirportCode = draft.arrivalAirportCode,
-                            arrivalAirportCode = draft.departureAirportCode
-                        )
-                    }
+                    presenter.swapFlightAirports(context)
                 },
                 onDateClick = onFlightDateClick,
                 onAdultCountChange = { delta ->
-                    FlightDraftStore.update { draft ->
-                        draft.copy(adultCount = (draft.adultCount + delta).coerceIn(1, 6))
-                    }
+                    presenter.changeFlightAdultCount(context, delta)
                 },
                 onCabinClassClick = {
-                    FlightDraftStore.update { draft -> draft.copy(cabinClass = nextCabin(draft.cabinClass)) }
+                    presenter.selectFlightCabinClass(
+                        context = context,
+                        cabinClass = nextCabin(uiState.flightCabinClass)
+                    )
                 },
                 onDirectOnlyChanged = { checked ->
-                    FlightDraftStore.update { draft -> draft.copy(directFlightsOnly = checked) }
+                    presenter.setFlightDirectOnly(context, checked)
                 },
                 onSearchClick = {
                     presenter.submitFlightSearch(context)
@@ -189,63 +169,68 @@ fun SearchScreen(
                 topPadding = innerPadding.calculateTopPadding(),
                 onProductSelected = ::selectProduct,
                 onTripTypeSelected = { tripType ->
-                    updateFlightHotelDraft { draft -> draft.copy(tripType = tripType) }
+                    presenter.selectFlightHotelTripType(context, tripType)
                 },
                 onDepartureClick = {
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(
-                            departureAirportCode = nextAirportCode(
-                                currentCode = draft.departureAirportCode,
-                                excludedCode = draft.arrivalAirportCode
-                            )
+                    presenter.selectFlightHotelDepartureAirport(
+                        context = context,
+                        airportCode = nextAirportCode(
+                            currentCode = uiState.flightHotelDepartureCode,
+                            excludedCode = uiState.flightHotelArrivalCode
                         )
-                    }
+                    )
                 },
                 onArrivalClick = {
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(
-                            arrivalAirportCode = nextAirportCode(
-                                currentCode = draft.arrivalAirportCode,
-                                excludedCode = draft.departureAirportCode
-                            )
+                    presenter.selectFlightHotelArrivalAirport(
+                        context = context,
+                        airportCode = nextAirportCode(
+                            currentCode = uiState.flightHotelArrivalCode,
+                            excludedCode = uiState.flightHotelDepartureCode
                         )
-                    }
+                    )
                 },
                 onDepartureDateClick = {
-                    updateFlightHotelDraft { draft -> draft.copy(departureDate = draft.departureDate.plusDays(1)) }
+                    presenter.setFlightHotelDepartureDate(
+                        context = context,
+                        departureDate = uiState.flightHotelDepartureDate.plusDays(1)
+                    )
                 },
                 onPassengerCountChange = { delta ->
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(passengerCount = (draft.passengerCount + delta).coerceIn(1, 6))
-                    }
+                    presenter.changeFlightHotelPassengerCount(context, delta)
                 },
                 onRoomCountChange = { delta ->
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(roomCount = (draft.roomCount + delta).coerceIn(1, 4))
-                    }
+                    presenter.changeFlightHotelRoomCount(context, delta)
                 },
                 onCabinClassClick = {
-                    updateFlightHotelDraft { draft -> draft.copy(cabinClass = nextCabin(draft.cabinClass)) }
+                    presenter.selectFlightHotelCabinClass(
+                        context = context,
+                        cabinClass = nextCabin(uiState.flightHotelCabinClass)
+                    )
                 },
                 onDifferentCityAndDatesChanged = { checked ->
-                    updateFlightHotelDraft { draft -> draft.copy(differentCityAndDates = checked) }
+                    presenter.setFlightHotelDifferentCityAndDates(
+                        context = context,
+                        checked = checked,
+                        airportOptions = uiState.flightAirports
+                    )
                 },
                 onStayDestinationClick = {
                     val options = buildList {
-                        uiState.flightAirports.firstOrNull { it.code == flightHotelDraft.arrivalAirportCode }?.city?.let(::add)
+                        uiState.flightAirports.firstOrNull { it.code == uiState.flightHotelArrivalCode }?.city?.let(::add)
                         addAll(uiState.destinationCards.map { it.title })
                     }.distinct()
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(stayDestinationQuery = nextFromList(draft.stayDestinationQuery, options))
-                    }
+                    presenter.selectFlightHotelStayDestination(
+                        context = context,
+                        destination = nextFromList(uiState.flightHotelStayDestinationQuery, options),
+                        airportOptions = uiState.flightAirports
+                    )
                 },
                 onStayDatesClick = {
-                    updateFlightHotelDraft { draft ->
-                        draft.copy(
-                            checkInDate = draft.checkInDate.plusDays(1),
-                            checkOutDate = draft.checkOutDate.plusDays(1)
-                        )
-                    }
+                    presenter.shiftFlightHotelStayDates(
+                        context = context,
+                        days = 1,
+                        airportOptions = uiState.flightAirports
+                    )
                 },
                 onSearchClick = {
                     presenter.submitFlightHotelSearch(context)
@@ -258,18 +243,17 @@ fun SearchScreen(
                 topPadding = innerPadding.calculateTopPadding(),
                 onProductSelected = ::selectProduct,
                 onReturnToSameLocationChanged = { checked ->
-                    CarRentalDraftStore.update { draft -> draft.copy(returnToSameLocation = checked) }
+                    presenter.setCarReturnToSameLocation(context, checked)
                 },
                 onPickupLocationClick = {
-                    CarRentalDraftStore.update { draft ->
-                        draft.copy(pickupLocation = nextFromList(draft.pickupLocation, uiState.carPickupLocations))
-                    }
+                    presenter.selectCarPickupLocation(
+                        context = context,
+                        pickupLocation = nextFromList(uiState.carPickupLocation, uiState.carPickupLocations)
+                    )
                 },
                 onDateClick = onCarDateClick,
-                onDriverAgeClick = {
-                    CarRentalDraftStore.update { draft ->
-                        draft.copy(driverAgeBand = nextFromList(draft.driverAgeBand, uiState.carDriverAgeOptions))
-                    }
+                onDriverAgeChange = { value ->
+                    presenter.setCarDriverAge(context, value)
                 },
                 onSearchClick = {
                     presenter.submitCarRentalSearch(context)
@@ -282,21 +266,22 @@ fun SearchScreen(
                 topPadding = innerPadding.calculateTopPadding(),
                 onProductSelected = ::selectProduct,
                 onTripTypeSelected = { tripType ->
-                    TaxiDraftStore.update { draft ->
-                        draft.copy(
-                            tripType = tripType,
-                            returnDateTime = if (tripType == TaxiTripType.RoundTrip) {
-                                draft.returnDateTime
-                            } else {
-                                draft.pickupDateTime.plusHours(6)
-                            }
-                        )
+                    presenter.selectTaxiTripType(context, tripType)
+                    if (tripType != TaxiTripType.RoundTrip) {
+                        showTaxiReturnTimeSheet = false
                     }
                 },
-                onPickupLocationClick = onTaxiPickupClick,
-                onDestinationClick = onTaxiDestinationClick,
-                onTimeClick = onTaxiTimeClick,
-                onPassengersClick = onTaxiPassengersClick,
+                onPickupLocationClick = {
+                    taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Pickup.name
+                    showTaxiRoutePlanner = true
+                },
+                onDestinationClick = {
+                    taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Destination.name
+                    showTaxiRoutePlanner = true
+                },
+                onTimeClick = { showTaxiOutboundTimeSheet = true },
+                onReturnTimeClick = { showTaxiReturnTimeSheet = true },
+                onPassengersClick = { showTaxiPassengersSheet = true },
                 onSearchClick = {
                     presenter.submitTaxiSearch(context)
                     onTaxiSearchClick()
@@ -322,32 +307,51 @@ fun SearchScreen(
                 onApplyClick = { showStayGuestsSheet = false }
             )
         }
-    }
-}
 
-private fun normalizeFlightHotelDraft(
-    draft: FlightPlusHotelDraft,
-    airportOptions: List<AirportOptionUiModel>
-): FlightPlusHotelDraft {
-    val arrivalCity = airportOptions.firstOrNull { it.code == draft.arrivalAirportCode }?.city
-        ?: draft.stayDestinationQuery
-    val normalizedCheckIn = if (draft.differentCityAndDates) draft.checkInDate else draft.departureDate
-    val desiredCheckOut = if (draft.differentCityAndDates) draft.checkOutDate else draft.departureDate.plusDays(2)
-    val normalizedCheckOut = if (desiredCheckOut <= normalizedCheckIn) {
-        normalizedCheckIn.plusDays(2)
-    } else {
-        desiredCheckOut
-    }
+        if (showTaxiRoutePlanner) {
+            TaxiRoutePlannerDialog(
+                initialPickupLocation = uiState.taxiPickupLocation,
+                initialDestination = uiState.taxiDestination,
+                focus = TaxiRoutePlannerFocus.valueOf(taxiRoutePlannerFocusName),
+                onDismissRequest = { showTaxiRoutePlanner = false },
+                onConfirm = { pickupLocation, destination ->
+                    presenter.setTaxiRoute(context, pickupLocation, destination)
+                }
+            )
+        }
 
-    return draft.copy(
-        passengerCount = draft.passengerCount.coerceAtLeast(1),
-        roomCount = draft.roomCount.coerceAtLeast(1),
-        stayDestinationQuery = if (draft.differentCityAndDates) {
-            draft.stayDestinationQuery.ifBlank { arrivalCity }
-        } else {
-            arrivalCity
-        },
-        checkInDate = normalizedCheckIn,
-        checkOutDate = normalizedCheckOut
-    )
+        if (showTaxiOutboundTimeSheet) {
+            TaxiScheduleTimeSheet(
+                title = "Schedule outbound ride",
+                helperText = "When do you want to be picked up?",
+                initialDateTime = uiState.taxiPickupDateTime,
+                onDismissRequest = { showTaxiOutboundTimeSheet = false },
+                onConfirm = { outboundDateTime ->
+                    presenter.setTaxiPickupDateTime(context, outboundDateTime)
+                }
+            )
+        }
+
+        if (showTaxiReturnTimeSheet && uiState.taxiTripType == TaxiTripType.RoundTrip) {
+            TaxiScheduleTimeSheet(
+                title = "Schedule return ride",
+                helperText = "When do you want to be picked up?",
+                initialDateTime = uiState.taxiReturnDateTime,
+                onDismissRequest = { showTaxiReturnTimeSheet = false },
+                onConfirm = { returnDateTime ->
+                    presenter.setTaxiReturnDateTime(context, returnDateTime)
+                }
+            )
+        }
+
+        if (showTaxiPassengersSheet) {
+            TaxiPassengersSheet(
+                initialPassengers = uiState.taxiPassengerCount,
+                onDismissRequest = { showTaxiPassengersSheet = false },
+                onDoneClick = { passengers ->
+                    presenter.setTaxiPassengerCount(context, passengers)
+                }
+            )
+        }
+    }
 }

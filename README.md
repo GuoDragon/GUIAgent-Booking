@@ -44,6 +44,10 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - Taxi time page
 - Taxi passengers page
 - Taxi search results page
+- Taxi add flight tracking page
+- Taxi choose flight page
+- Taxi choose airlines flight sheet
+- Taxi choose flight-times sheet
 - Taxi contact details page
 - Taxi booking overview page
 - Taxi booking success page
@@ -74,11 +78,17 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - The Search tab is now a multi-product hub for `Stays`, `Flights`, `Flight + Hotel`, `Car rental`, `Taxi`, and `Attractions`.
 - The `Flight + Hotel` search first shows a combined hub, then branches into the reused dedicated Flights and Stays result flows.
 - All page canvases now use white backgrounds; blue is reserved for accents such as top bars, primary buttons, selected chips, and highlight cards.
+- Taxi search now keeps input editing on the search card itself: pick-up/destination opens the same route-planner style overlay, time is chosen in calendar bottom sheets, and passengers are adjusted in a dedicated passenger bottom sheet.
 - Stay and car-rental result cards now pull packaged reference photos from `app/src/main/assets/reference_images`; if the demo list is longer than the available images, the extra cards intentionally fall back to blank image tiles.
+- Attractions result cards now load local reference photos from `app/src/main/assets/reference_images/attractions` (sourced from `image/Attractions`), with the same safe blank fallback when an image cannot be loaded.
+- The Car Rentals search card now edits the driver's age as a direct numeric input with the system keyboard instead of cycling through preset age bands.
+- Stay result cards now show an additional synthetic review score badge on a 0-10 scale for each card, calculated as the average of multiple stable virtual score samples.
 - Taxi and attraction flows keep the same MVP split and reuse local JSON assets instead of adding remote dependencies or placeholder backend calls.
 - The Search home opens the Stays room-and-guests selector as a bottom sheet, and the `Sort` entry points on result pages now open bottom sheets instead of separate pages.
 - The old standalone Guests and Sort routes have been removed from navigation; those interactions are now sheet-only entry points.
 - Screenshot structure is the visual guide, but rendered content prefers the current local JSON data from `app/src/main/assets/data`.
+- MVP boundaries were tightened in this round: `Screen` and `BookingNavGraph` no longer read or mutate `DraftStore`/`DataRepository` directly; those operations are now routed through Presenter intents.
+- Search, Flights booking meal selection, and result-to-detail selection flows (Stay/Flight/Car/Attraction) now use Presenter-owned selection/update methods so navigation remains UI-only.
 
 ## Interaction rules in this round
 
@@ -86,12 +96,21 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - The map actions on flight and car-rental results follow the same rule and only write detectable local search signals.
 - The date pickers let the user restart a range by tapping the current start date again, and the Stays date flexibility chips now scroll horizontally in one row.
 - The stay booking flow is wired end to end: search -> results -> details -> room type -> personal info -> booking overview -> booking success.
+- From stay booking success, `Search again` now opens the stay results page directly instead of returning to the Search hub.
+- All booking success pages now send `Search again` to the matching product results entry page (`StayResults`, `FlightResults`, `CarRentalResults`, `TaxiResults`, `AttractionResults`) instead of the Search hub.
 - The flight booking flow is wired end to end: search -> date -> results -> details -> fare -> luggage -> meal choice -> custom preferences -> traveler details -> traveler contact -> booking success.
 - The car-rental flow is wired end to end: search -> date -> results -> details -> booking summary -> booking success.
-- The taxi flow is wired end to end: search tab -> pickup/destination/time/passengers -> results -> contact details -> booking overview -> booking success.
+- The taxi flow is wired end to end: search tab (route planner + time/passenger sheets) -> results -> add flight tracking -> choose flight (with airline/time filters) -> contact details -> booking overview -> booking success.
+- In Taxi round-trip mode, the search card now shows an extra return-time row (`Add a return time`) that opens its own scheduling sheet.
+- In Trips `History`, completed stay orders now support `Write review` / `Edit review` through a bottom-sheet form (rating + comment).
 - The attractions flow is wired end to end: search tab -> destination/date -> results -> preview -> details -> tickets -> ticket details -> personal info -> payment -> booking success.
 - Stay, flight, and car-rental result pages intentionally expand the local data into denser demo lists so the same search can show multiple rows.
+- Stay details now reuse six assigned reference images from the same stay image pool, and the room-type cards reuse that same six-image set as thumbnails.
+- Stay details `Property highlights` is now rendered as a horizontally scrollable single row.
+- Stay details adds multiple hotel-specific mock guest reviews under `You searched for`.
 - Taxi and attraction result lists also expand the local asset data into richer demo rows while keeping selection and booking state in dedicated draft stores.
+- Detail and booking screens now explicitly stretch their top summary cards to the full content width wherever the same right-edge gap issue was found.
+- Stay booking overview cards now also stretch to full content width to remove right-edge gaps on rectangle sections.
 - Fields that do not have dedicated in-scope picker pages stay inline on the search cards instead of opening extra placeholder pages.
 - Other rows and toolbar buttons that are outside the requested flow remain visual-only placeholders.
 - The personal info and booking overview steps use real Compose text fields so the system keyboard is shown when the user types.
@@ -103,6 +122,7 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
   - `orders.json`
   - `runtime_search_signals.json`
   - `runtime_booking_signals.json`
+  - `runtime_hotel_review_signals.json`
 - Stay search submission writes `STAY_SEARCH_SUBMITTED` into `runtime_search_signals.json`.
 - Flight search submission writes `FLIGHT_SEARCH_SUBMITTED` into `runtime_search_signals.json`.
 - Flight + Hotel search submission writes `FLIGHT_HOTEL_SEARCH_SUBMITTED` into `runtime_search_signals.json` and syncs the combined draft into the dedicated Flights and Stays flows.
@@ -118,12 +138,14 @@ Compose-based Booking UI prototype built around the local screenshot set and JSO
 - Completing a car-rental booking appends a new `CAR_RENTAL` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
 - Completing a taxi booking appends a new `TAXI` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
 - Completing an attraction booking appends a new `ATTRACTION` order into the runtime `orders.json` file and appends a matching booking signal into `runtime_booking_signals.json`.
-- Trips now observes the runtime data version so newly created stay orders appear without restarting the app.
+- Submitting or editing a stay review from Trips `History` upserts one hotel-review signal per stay order into `runtime_hotel_review_signals.json`.
+- Trips now observes the runtime data version via `OrdersPresenter.observeRuntimeVersion()` so newly created stay orders appear without restarting the app.
 - The same runtime refresh path is reused for newly created flight, car-rental, taxi, and attraction orders.
 - Saved lists are grouped from `wishlist.json` using safe fallbacks when referenced content cannot be resolved directly.
 - Personal and account data come from `users.json`.
 - Travel companions come from `travel_companions.json`.
 - Demo-expanded result rows now keep stable IDs while varying supporting labels so repeated cards no longer look completely identical.
+- A structure-level MVP audit was re-run for the current implemented feature pages; Contract/Presenter/Screen triads remain in place and this round only adjusted navigation mapping.
 
 ## Build note
 

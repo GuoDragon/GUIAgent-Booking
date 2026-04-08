@@ -61,6 +61,11 @@ class StayResultsPresenter(
         )
     }
 
+    override fun selectHotel(context: Context, hotelId: String) {
+        StayDraftStore.selectHotel(hotelId)
+        loadData(context)
+    }
+
     private fun expandHotelCards(
         context: Context,
         hotels: List<Hotel>,
@@ -91,6 +96,7 @@ class StayResultsPresenter(
             city = hotel.city,
             country = hotel.country,
             starRating = hotel.starRating,
+            reviewScoreText = reviewScoreText(variantKey),
             ratingText = ratingLabel(hotel.rating),
             reviewCountText = "${hotel.reviewCount} reviews",
             locationText = buildLocationText(hotel, variantKey),
@@ -102,6 +108,14 @@ class StayResultsPresenter(
             taxesText = buildTaxesText(variantKey),
             imageAssetPath = imageAssetPath
         )
+    }
+
+    private fun reviewScoreText(variantKey: String): String {
+        val averageScore = List(6) { index ->
+            val scoreTenth = DemoVisuals.stableIndex("$variantKey:score:$index", 101)
+            scoreTenth / 10.0
+        }.average()
+        return String.format("%.1f", averageScore)
     }
 
     private fun ratingLabel(rating: Double): String {

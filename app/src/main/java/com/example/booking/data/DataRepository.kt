@@ -11,6 +11,7 @@ import com.example.booking.model.Cruise
 import com.example.booking.model.Flight
 import com.example.booking.model.Hotel
 import com.example.booking.model.HotelRoom
+import com.example.booking.model.HotelReviewSignal
 import com.example.booking.model.Order
 import com.example.booking.model.SearchSignal
 import com.example.booking.model.TaxiRoute
@@ -28,6 +29,7 @@ object DataRepository {
     private const val ORDERS_FILE_NAME = "orders.json"
     private const val RUNTIME_SEARCH_SIGNALS_FILE_NAME = "runtime_search_signals.json"
     private const val RUNTIME_BOOKING_SIGNALS_FILE_NAME = "runtime_booking_signals.json"
+    private const val RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME = "runtime_hotel_review_signals.json"
 
     private val gson = Gson()
     private val runtimeDataVersion = MutableStateFlow(0)
@@ -37,6 +39,7 @@ object DataRepository {
         ensureSeededAssetFile(context, ORDERS_FILE_NAME)
         ensureListFile(context, RUNTIME_SEARCH_SIGNALS_FILE_NAME)
         ensureListFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME)
+        ensureListFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME)
     }
 
     fun observeRuntimeDataVersion(): StateFlow<Int> = runtimeDataVersion
@@ -140,6 +143,12 @@ object DataRepository {
         return gson.fromJson(json, object : TypeToken<List<BookingSignal>>() {}.type)
     }
 
+    fun loadHotelReviewSignals(context: Context): List<HotelReviewSignal> {
+        initializeRuntimeFiles(context)
+        val json = readText(appFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME))
+        return gson.fromJson(json, object : TypeToken<List<HotelReviewSignal>>() {}.type)
+    }
+
     fun appendOrder(context: Context, order: Order) {
         synchronized(writeLock) {
             val updatedOrders = loadOrders(context).toMutableList().apply { add(order) }
@@ -160,6 +169,20 @@ object DataRepository {
         synchronized(writeLock) {
             val updatedSignals = loadBookingSignals(context).toMutableList().apply { add(signal) }
             writeText(appFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME), gson.toJson(updatedSignals))
+            bumpRuntimeVersion()
+        }
+    }
+
+    fun upsertHotelReviewSignal(context: Context, signal: HotelReviewSignal) {
+        synchronized(writeLock) {
+            val updatedSignals = loadHotelReviewSignals(context).toMutableList()
+            val existingIndex = updatedSignals.indexOfFirst { it.orderId == signal.orderId }
+            if (existingIndex >= 0) {
+                updatedSignals[existingIndex] = signal
+            } else {
+                updatedSignals.add(signal)
+            }
+            writeText(appFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME), gson.toJson(updatedSignals))
             bumpRuntimeVersion()
         }
     }

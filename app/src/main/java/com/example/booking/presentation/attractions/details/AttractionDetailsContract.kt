@@ -50,6 +50,7 @@ interface AttractionTicketsContract {
 
     interface Presenter {
         fun loadData(context: Context)
+        fun selectTicket(ticketId: String)
     }
 }
 

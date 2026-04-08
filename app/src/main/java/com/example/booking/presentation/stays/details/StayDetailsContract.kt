@@ -23,12 +23,13 @@ data class StayDetailsUiState(
     val locationText: String = "",
     val description: String = "",
     val highlightAmenities: List<String> = emptyList(),
-    val photoLabels: List<String> = emptyList(),
+    val photoAssetPaths: List<String?> = emptyList(),
     val checkInLabel: String = "",
     val checkOutLabel: String = "",
     val guestSummary: String = "",
     val nightsLabel: String = "",
     val roomPreviewText: String = "",
+    val guestReviews: List<StayGuestReviewUiModel> = emptyList(),
     val priceText: String = ""
 )
 
@@ -39,6 +40,7 @@ interface StayRoomTypeContract {
 
     interface Presenter {
         fun loadData(context: Context)
+        fun selectRoom(roomId: String)
     }
 }
 
@@ -60,5 +62,14 @@ data class StayRoomCardUiModel(
     val priceText: String,
     val taxesText: String,
     val availabilityText: String,
+    val imageAssetPath: String? = null,
     val enabled: Boolean
+)
+
+data class StayGuestReviewUiModel(
+    val reviewer: String,
+    val scoreText: String,
+    val title: String,
+    val detail: String,
+    val meta: String
 )

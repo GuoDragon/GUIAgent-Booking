@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.attractions.common.AttractionDraftStore
 import com.example.booking.presentation.stays.common.StayFooterBar
 import com.example.booking.presentation.stays.common.StayPhotoPlaceholder
 import com.example.booking.ui.components.BookingBackTopBar
@@ -65,7 +64,7 @@ fun AttractionPreviewScreen(
     }
     val presenter = remember(view) { AttractionPreviewPresenter(view) }
 
-    LaunchedEffect(presenter, context, AttractionDraftStore.snapshot().selectedAttractionId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -95,7 +94,7 @@ fun AttractionDetailsScreen(
     }
     val presenter = remember(view) { AttractionDetailsPresenter(view) }
 
-    LaunchedEffect(presenter, context, AttractionDraftStore.snapshot().selectedAttractionId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -133,7 +132,7 @@ fun AttractionDetailsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = uiState.title,
                             color = BookingTextPrimary,
@@ -167,7 +166,7 @@ fun AttractionDetailsScreen(
 @Composable
 fun AttractionTicketsScreen(
     onBackClick: () -> Unit,
-    onTicketClick: (String) -> Unit
+    onTicketClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(AttractionTicketsUiState()) }
@@ -181,7 +180,7 @@ fun AttractionTicketsScreen(
     }
     val presenter = remember(view) { AttractionTicketsPresenter(view) }
 
-    LaunchedEffect(presenter, context, AttractionDraftStore.snapshot().selectedAttractionId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -216,7 +215,10 @@ fun AttractionTicketsScreen(
                     BookingRoundedCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onTicketClick(ticket.ticketId) }
+                            .clickable {
+                                presenter.selectTicket(ticket.ticketId)
+                                onTicketClick()
+                            }
                     ) {
                         Text(text = ticket.title, color = BookingTextPrimary, fontWeight = FontWeight.Bold)
                         Text(text = ticket.description, color = BookingTextSecondary, modifier = Modifier.padding(top = 8.dp))
@@ -247,7 +249,7 @@ fun AttractionTicketDetailsScreen(
     }
     val presenter = remember(view) { AttractionTicketDetailPresenter(view) }
 
-    LaunchedEffect(presenter, context, AttractionDraftStore.snapshot().selectedTicketId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -285,7 +287,7 @@ fun AttractionTicketDetailsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(text = uiState.title, color = BookingTextPrimary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
                         Text(text = uiState.attractionTitle, color = BookingBlueLight, modifier = Modifier.padding(top = 8.dp))
                         Text(text = uiState.description, color = BookingTextPrimary, modifier = Modifier.padding(top = 14.dp))
@@ -340,7 +342,7 @@ private fun AttractionPreviewScaffold(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = uiState.title,
                             color = BookingTextPrimary,

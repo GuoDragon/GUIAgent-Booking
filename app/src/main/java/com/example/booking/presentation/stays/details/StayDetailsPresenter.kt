@@ -1,6 +1,7 @@
 package com.example.booking.presentation.stays.details
 
 import android.content.Context
+import com.example.booking.common.demo.DemoVisuals
 import com.example.booking.common.format.BookingFormatters
 import com.example.booking.data.DataRepository
 import com.example.booking.model.Hotel
@@ -27,6 +28,11 @@ class StayDetailsPresenter(
 
         val hotelRooms = StayFlowMapper.roomsForHotel(rooms, hotel.hotelId)
         val cheapestRoom = hotelRooms.minByOrNull { it.pricePerNight }
+        val photoAssetPaths = DemoVisuals.stayImageAssignments(
+            context = context,
+            seed = hotel.hotelId,
+            cardCount = 6
+        )
 
         view.showState(
             StayDetailsUiState(
@@ -40,7 +46,7 @@ class StayDetailsPresenter(
                 locationText = ratingLabel(hotel.rating),
                 description = hotel.description,
                 highlightAmenities = hotel.amenities.take(6),
-                photoLabels = buildPhotoLabels(hotel),
+                photoAssetPaths = photoAssetPaths,
                 checkInLabel = BookingFormatters.formatLongLocalDate(draft.checkInDate),
                 checkOutLabel = BookingFormatters.formatLongLocalDate(draft.checkOutDate),
                 guestSummary = BookingFormatters.formatGuestSummary(
@@ -50,21 +56,11 @@ class StayDetailsPresenter(
                 ),
                 nightsLabel = BookingFormatters.formatNightCount(draft.checkInDate, draft.checkOutDate),
                 roomPreviewText = roomPreviewText(hotelRooms.size),
+                guestReviews = buildGuestReviews(hotel),
                 priceText = cheapestRoom?.let {
                     "From ${BookingFormatters.formatCurrency(it.pricePerNight, it.currency)}"
                 } ?: "Rooms unavailable"
             )
-        )
-    }
-
-    private fun buildPhotoLabels(hotel: Hotel): List<String> {
-        return listOf(
-            hotel.city,
-            hotel.name,
-            hotel.country,
-            hotel.name.take(1),
-            hotel.city.take(1),
-            "+${hotel.reviewCount % 60 + 12}"
         )
     }
 
@@ -73,6 +69,51 @@ class StayDetailsPresenter(
             roomCount <= 0 -> "No rooms available in local data"
             roomCount == 1 -> "1 room available in local data"
             else -> "$roomCount room types available"
+        }
+    }
+
+    private fun buildGuestReviews(hotel: Hotel): List<StayGuestReviewUiModel> {
+        val reviewerNames = listOf(
+            "Olivia", "Noah", "Emma", "Liam", "Ava", "Mason", "Sophia", "Ethan", "Isabella", "Lucas",
+            "Mia", "James", "Charlotte", "Henry", "Amelia", "Benjamin", "Harper", "Logan"
+        )
+        val titles = listOf(
+            "Great location and smooth check-in",
+            "Comfortable room for a short city break",
+            "Solid choice for the price",
+            "Would stay again for this area",
+            "Clean, practical and close to transport",
+            "Good value with friendly staff"
+        )
+        val details = listOf(
+            "The room was tidy and quiet at night. Walking to nearby spots was easy and the front desk was efficient.",
+            "Good mattress, clean bathroom and clear instructions for late arrival. It covered everything needed for this trip.",
+            "The property feels straightforward and reliable. Public transport and food options are close by.",
+            "Check-in was quick, Wi-Fi stable, and common areas were well maintained during the stay.",
+            "Everything matched the listing and the stay felt predictable. Good pick for a packed schedule."
+        )
+        val metaLabels = listOf(
+            "Solo traveler",
+            "Couple",
+            "Family stay",
+            "Business trip",
+            "Weekend break"
+        )
+
+        return List(4) { index ->
+            val key = "${hotel.hotelId}:review:$index"
+            val reviewer = reviewerNames[DemoVisuals.stableIndex("$key:name", reviewerNames.size)]
+            val title = titles[DemoVisuals.stableIndex("$key:title", titles.size)]
+            val detail = details[DemoVisuals.stableIndex("$key:detail", details.size)]
+            val meta = metaLabels[DemoVisuals.stableIndex("$key:meta", metaLabels.size)]
+            val score = DemoVisuals.stableIndex("$key:score", 19) + 80
+            StayGuestReviewUiModel(
+                reviewer = reviewer,
+                scoreText = String.format("%.1f", score / 10.0),
+                title = title,
+                detail = detail,
+                meta = "$meta \u00b7 ${hotel.city}"
+            )
         }
     }
 
@@ -103,6 +144,11 @@ class StayRoomTypePresenter(
         val requiredGuestsPerRoom = ceil(draft.totalGuests.toDouble() / draft.roomCount.toDouble()).toInt()
             .coerceAtLeast(1)
         val nightCount = ChronoUnit.DAYS.between(draft.checkInDate, draft.checkOutDate).coerceAtLeast(1)
+        val roomImageAssignments = DemoVisuals.stayImageAssignments(
+            context = context,
+            seed = hotel.hotelId,
+            cardCount = 6
+        )
 
         val roomCards = StayFlowMapper.roomsForHotel(rooms, hotel.hotelId)
             .sortedBy { it.pricePerNight }
@@ -112,7 +158,10 @@ class StayRoomTypePresenter(
                     roomCount = draft.roomCount,
                     nights = nightCount.toInt(),
                     requiredGuestsPerRoom = requiredGuestsPerRoom,
-                    index = index
+                    index = index,
+                    imageAssetPath = roomImageAssignments.getOrNull(
+                        if (roomImageAssignments.isEmpty()) 0 else index % roomImageAssignments.size
+                    )
                 )
             }
 
@@ -131,12 +180,17 @@ class StayRoomTypePresenter(
         )
     }
 
+    override fun selectRoom(roomId: String) {
+        StayDraftStore.selectRoom(roomId)
+    }
+
     private fun roomToCard(
         room: HotelRoom,
         roomCount: Int,
         nights: Int,
         requiredGuestsPerRoom: Int,
-        index: Int
+        index: Int,
+        imageAssetPath: String?
     ): StayRoomCardUiModel {
         val enabled = room.available && room.maxGuests >= requiredGuestsPerRoom
         val totalRoomPrice = room.pricePerNight * roomCount
@@ -154,6 +208,7 @@ class StayRoomTypePresenter(
             } else {
                 "Not enough space for your current party"
             },
+            imageAssetPath = imageAssetPath,
             enabled = enabled
         )
     }

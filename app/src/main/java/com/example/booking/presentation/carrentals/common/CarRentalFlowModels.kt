@@ -22,7 +22,7 @@ data class CarRentalDraft(
     val pickupLocation: String = "London Heathrow Airport (LHR)",
     val pickupDateTime: LocalDateTime = LocalDateTime.now().plusDays(14).withHour(10).withMinute(0),
     val returnDateTime: LocalDateTime = LocalDateTime.now().plusDays(16).withHour(10).withMinute(0),
-    val driverAgeBand: String = "30-65",
+    val driverAgeText: String = "30",
     val sortOption: CarRentalSortOption = CarRentalSortOption.Recommended,
     val filterState: CarRentalFilterState = CarRentalFilterState(),
     val selectedCarId: String? = null,

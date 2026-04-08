@@ -13,11 +13,14 @@ data class TaxiDraft(
     val destination: String = "Manhattan City Center",
     val pickupDateTime: LocalDateTime = LocalDateTime.now().plusDays(1).withHour(11).withMinute(0),
     val returnDateTime: LocalDateTime = LocalDateTime.now().plusDays(2).withHour(17).withMinute(0),
+    val returnDateTimeConfirmed: Boolean = false,
     val passengerCount: Int = 2,
     val selectedRouteId: String? = null,
+    val selectedFlightId: String? = null,
     val contactName: String = "Alex Johnson",
     val contactEmail: String = "alex@example.com",
     val contactPhone: String = "+1 555 0148",
+    val departureAirportQuery: String = "",
     val flightNumber: String = "MU721",
     val completedOrderId: String? = null
 )
@@ -32,7 +35,7 @@ object TaxiDraftStore {
     }
 
     fun prepareForSearch() {
-        draft = draft.copy(selectedRouteId = null, completedOrderId = null)
+        draft = draft.copy(selectedRouteId = null, selectedFlightId = null, completedOrderId = null)
     }
 
     fun selectRoute(routeId: String) {

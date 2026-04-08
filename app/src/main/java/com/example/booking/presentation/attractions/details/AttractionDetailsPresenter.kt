@@ -97,6 +97,10 @@ class AttractionTicketsPresenter(
             )
         )
     }
+
+    override fun selectTicket(ticketId: String) {
+        AttractionDraftStore.selectTicket(ticketId)
+    }
 }
 
 class AttractionTicketDetailPresenter(

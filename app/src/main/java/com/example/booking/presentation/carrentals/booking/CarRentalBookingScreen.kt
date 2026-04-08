@@ -102,7 +102,7 @@ fun CarRentalBookingSummaryScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = uiState.title,
                             style = MaterialTheme.typography.headlineSmall,
@@ -147,7 +147,7 @@ fun CarRentalBookingSummaryScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Payable today",
                             style = MaterialTheme.typography.titleLarge,

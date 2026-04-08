@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.stays.common.StayPhotoPlaceholder
 import com.example.booking.ui.components.BookingStatusChip
 import com.example.booking.ui.components.BookingMapNoticeDialog
 import com.example.booking.ui.components.BookingReferenceImage
@@ -57,7 +56,7 @@ import com.example.booking.ui.theme.BookingWhite
 fun StayResultsScreen(
     onBackClick: () -> Unit,
     onFilterClick: () -> Unit,
-    onHotelClick: (String) -> Unit
+    onHotelClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(StayResultsUiState("", "", "", 0)) }
@@ -166,7 +165,10 @@ fun StayResultsScreen(
                 items(uiState.hotelCards, key = { it.cardId }) { hotel ->
                     StayHotelCard(
                         hotel = hotel,
-                        onClick = { onHotelClick(hotel.hotelId) }
+                        onClick = {
+                            presenter.selectHotel(context, hotel.hotelId)
+                            onHotelClick()
+                        }
                     )
                 }
             }
@@ -255,19 +257,35 @@ private fun StayHotelCard(
                     }
                 }
                 Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    BookingStatusChip(
-                        text = hotel.ratingText,
-                        containerColor = Color(0xFFE3F0FF),
-                        contentColor = BookingBlueLight
-                    )
-                    Text(
-                        text = hotel.reviewCountText,
-                        color = BookingTextSecondary,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BookingStatusChip(
+                            text = hotel.ratingText,
+                            containerColor = Color(0xFFE3F0FF),
+                            contentColor = BookingBlueLight
+                        )
+                        Text(
+                            text = hotel.reviewCountText,
+                            color = BookingTextSecondary,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = BookingBlueLight
+                    ) {
+                        Text(
+                            text = hotel.reviewScoreText,
+                            color = BookingWhite,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        )
+                    }
                 }
                 Text(
                     text = hotel.locationText,

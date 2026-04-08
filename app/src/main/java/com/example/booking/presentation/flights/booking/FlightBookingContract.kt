@@ -55,6 +55,22 @@ data class FlightFlexibleOptionUiModel(
     val selected: Boolean
 )
 
+interface FlightMealChoiceContract {
+    interface View {
+        fun showState(state: FlightMealChoiceUiState)
+    }
+
+    interface Presenter {
+        fun loadData()
+        fun selectMeal(option: String)
+    }
+}
+
+data class FlightMealChoiceUiState(
+    val options: List<String> = emptyList(),
+    val selectedMeal: String = "No preference"
+)
+
 interface FlightSeatContract {
     interface View {
         fun showState(state: FlightSeatUiState)

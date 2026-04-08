@@ -87,7 +87,8 @@ class TaxiTimePresenter(
                     returnDateTime
                 } else {
                     pickupDateTime.plusHours(6)
-                }
+                },
+                returnDateTimeConfirmed = draft.tripType == TaxiTripType.RoundTrip
             )
         }
     }

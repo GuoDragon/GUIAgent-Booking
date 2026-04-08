@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.carrentals.common.CarRentalFilterState
 import com.example.booking.presentation.carrentals.common.CarRentalSortOption
 import com.example.booking.presentation.stays.common.StayFilterChip
@@ -71,7 +70,7 @@ import com.example.booking.ui.theme.BookingWhite
 fun CarRentalResultsScreen(
     onBackClick: () -> Unit,
     onFilterClick: () -> Unit,
-    onCarClick: (String) -> Unit
+    onCarClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(CarRentalResultsUiState()) }
@@ -87,7 +86,7 @@ fun CarRentalResultsScreen(
     }
     val presenter = remember(view) { CarRentalResultsPresenter(view) }
 
-    LaunchedEffect(presenter, context, CarRentalDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -182,7 +181,13 @@ fun CarRentalResultsScreen(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(uiState.cards, key = { it.cardId }) { card ->
-                        CarRentalResultCard(card = card, onClick = { onCarClick(card.carId) })
+                        CarRentalResultCard(
+                            card = card,
+                            onClick = {
+                                presenter.selectCar(context, card.carId)
+                                onCarClick()
+                            }
+                        )
                     }
                 }
             }
@@ -443,7 +448,7 @@ fun CarRentalDetailsScreen(
     }
     val presenter = remember(view) { CarRentalDetailsPresenter(view) }
 
-    LaunchedEffect(presenter, context, CarRentalDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -481,7 +486,7 @@ fun CarRentalDetailsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = uiState.title,
                             style = MaterialTheme.typography.headlineSmall,
@@ -522,7 +527,7 @@ fun CarRentalDetailsScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Car details",
                             style = MaterialTheme.typography.titleLarge,
@@ -554,7 +559,7 @@ fun CarRentalDetailsScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "What's included",
                             style = MaterialTheme.typography.titleLarge,

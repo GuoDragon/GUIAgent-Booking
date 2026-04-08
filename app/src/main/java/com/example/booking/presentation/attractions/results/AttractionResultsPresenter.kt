@@ -17,6 +17,11 @@ class AttractionResultsPresenter(
         val attractions = AttractionFlowMapper.sortAttractions(
             AttractionFlowMapper.filterAttractions(DataRepository.loadAttractions(context), draft)
         )
+        val imageAssignments = DemoVisuals.attractionImageAssignments(
+            context = context,
+            seed = "${draft.destinationQuery}:${draft.selectedDate}",
+            cardCount = attractions.size
+        )
 
         view.showState(
             AttractionResultsUiState(
@@ -24,20 +29,27 @@ class AttractionResultsPresenter(
                 headerSubtitle = BookingFormatters.formatLongLocalDate(draft.selectedDate),
                 keywordLabel = "Filter by keyword",
                 cards = attractions.mapIndexed { index, attraction ->
-                    attractionToCard(attraction, index)
+                    attractionToCard(attraction, index, imageAssignments.getOrNull(index))
                 }
             )
         )
     }
 
+    override fun selectAttraction(context: Context, attractionId: String) {
+        AttractionDraftStore.selectAttraction(attractionId)
+        loadData(context)
+    }
+
     private fun attractionToCard(
         attraction: Attraction,
-        index: Int
+        index: Int,
+        imageAssetPath: String?
     ): AttractionResultCardUiModel {
         val variantKey = "${attraction.attractionId}_$index"
         val durationOptions = listOf("45 min", "1 hour", "2 hours", "Half day")
         return AttractionResultCardUiModel(
             attractionId = attraction.attractionId,
+            imageAssetPath = imageAssetPath,
             title = attraction.name,
             cityLabel = "${attraction.city}, ${attraction.country}",
             ratingText = String.format("%.1f", attraction.rating),

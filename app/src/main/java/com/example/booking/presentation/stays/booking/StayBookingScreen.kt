@@ -47,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.stays.common.StayFooterBar
 import com.example.booking.presentation.stays.common.StaySummaryInfoCard
 import com.example.booking.presentation.stays.common.StayTripPurpose
@@ -70,7 +69,6 @@ fun StayPersonalInfoScreen(
     onNextClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
-    val selectedRoomId = StayDraftStore.snapshot().selectedRoomId
     var uiState by remember { mutableStateOf(StayPersonalInfoUiState()) }
     var firstName by rememberSaveable { mutableStateOf("") }
     var lastName by rememberSaveable { mutableStateOf("") }
@@ -98,7 +96,7 @@ fun StayPersonalInfoScreen(
     }
     val presenter = remember(view) { StayPersonalInfoPresenter(view) }
 
-    LaunchedEffect(presenter, context, selectedRoomId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -273,7 +271,6 @@ fun StayBookingOverviewScreen(
     onBookingComplete: (String) -> Unit
 ) {
     val context = LocalContext.current.applicationContext
-    val selectedRoomId = StayDraftStore.snapshot().selectedRoomId
     var uiState by remember { mutableStateOf(StayBookingOverviewUiState()) }
     var interestedInCarRental by rememberSaveable { mutableStateOf(false) }
     var specialRequest by rememberSaveable { mutableStateOf("") }
@@ -289,7 +286,7 @@ fun StayBookingOverviewScreen(
     }
     val presenter = remember(view) { StayBookingOverviewPresenter(view) }
 
-    LaunchedEffect(presenter, context, selectedRoomId) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -337,7 +334,7 @@ fun StayBookingOverviewScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
@@ -398,7 +395,7 @@ fun StayBookingOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -433,7 +430,7 @@ fun StayBookingOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         BookingSectionHeader(title = "Booking conditions")
                         uiState.conditions.forEach { condition ->
                             Text(
@@ -445,7 +442,7 @@ fun StayBookingOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         BookingSectionHeader(title = "Benefits included")
                         uiState.benefits.forEach { benefit ->
                             Text(
@@ -457,7 +454,7 @@ fun StayBookingOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         BookingSectionHeader(title = "Your selection")
                         Text(
                             text = uiState.roomType,
@@ -512,7 +509,7 @@ fun StayBookingOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         BookingSectionHeader(title = "Special requests")
                         OutlinedTextField(
                             value = specialRequest,

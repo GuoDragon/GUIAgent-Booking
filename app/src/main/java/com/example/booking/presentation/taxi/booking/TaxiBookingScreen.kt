@@ -93,7 +93,7 @@ fun TaxiContactDetailsScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 18.dp)
             ) {
-                BookingRoundedCard {
+                BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                     Text(text = uiState.pickupLine, color = BookingTextPrimary, fontWeight = FontWeight.SemiBold)
                     Text(
                         text = uiState.destinationLine,
@@ -201,7 +201,7 @@ fun TaxiOverviewScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Trip summary",
                             color = BookingTextPrimary,
@@ -229,7 +229,7 @@ fun TaxiOverviewScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Payment",
                             color = BookingTextPrimary,

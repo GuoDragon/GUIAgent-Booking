@@ -93,7 +93,7 @@ fun AttractionPersonalInfoScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 18.dp)
             ) {
-                BookingRoundedCard {
+                BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                     Text(text = uiState.title, color = BookingTextPrimary, fontWeight = FontWeight.Bold)
                 }
                 OutlinedTextField(
@@ -182,7 +182,7 @@ fun AttractionPaymentScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(text = uiState.title, color = BookingTextPrimary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
                         Text(text = uiState.subtitle, color = BookingBlueLight, modifier = Modifier.padding(top = 8.dp))
                         Text(text = uiState.travelerName, color = BookingTextPrimary, modifier = Modifier.padding(top = 14.dp))
@@ -190,7 +190,7 @@ fun AttractionPaymentScreen(
                     }
                 }
                 item {
-                    BookingRoundedCard {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(text = "Pay with", color = BookingTextPrimary, fontWeight = FontWeight.Bold)
                         Text(text = "Visa ending in 4242", color = BookingTextSecondary, modifier = Modifier.padding(top = 10.dp))
                         Text(text = uiState.helperText, color = BookingTextSecondary, modifier = Modifier.padding(top = 14.dp))

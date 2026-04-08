@@ -9,6 +9,7 @@ interface AttractionResultsContract {
 
     interface Presenter {
         fun loadData(context: Context)
+        fun selectAttraction(context: Context, attractionId: String)
     }
 }
 
@@ -21,6 +22,7 @@ data class AttractionResultsUiState(
 
 data class AttractionResultCardUiModel(
     val attractionId: String,
+    val imageAssetPath: String?,
     val title: String,
     val cityLabel: String,
     val ratingText: String,

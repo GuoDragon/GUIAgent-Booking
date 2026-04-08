@@ -55,6 +55,11 @@ class CarRentalResultsPresenter(
         )
     }
 
+    override fun selectCar(context: Context, carId: String) {
+        CarRentalDraftStore.selectCar(carId)
+        loadData(context)
+    }
+
     private fun expandCards(
         context: Context,
         cars: List<CarRental>,

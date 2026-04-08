@@ -37,10 +37,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.attractions.common.AttractionDraftStore
-import com.example.booking.presentation.stays.common.StayPhotoPlaceholder
 import com.example.booking.ui.components.BookingBackTopBar
 import com.example.booking.ui.components.BookingEmptyState
+import com.example.booking.ui.components.BookingReferenceImage
 import com.example.booking.ui.components.BookingRoundedCard
 import com.example.booking.ui.components.BookingStatusChip
 import com.example.booking.ui.theme.BookingBlue
@@ -54,7 +53,7 @@ import com.example.booking.ui.theme.BookingWhite
 @Composable
 fun AttractionResultsScreen(
     onBackClick: () -> Unit,
-    onAttractionClick: (String) -> Unit
+    onAttractionClick: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(AttractionResultsUiState()) }
@@ -68,7 +67,7 @@ fun AttractionResultsScreen(
     }
     val presenter = remember(view) { AttractionResultsPresenter(view) }
 
-    LaunchedEffect(presenter, context, AttractionDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -128,7 +127,10 @@ fun AttractionResultsScreen(
                 items(uiState.cards, key = { it.attractionId }) { card ->
                     AttractionResultCard(
                         card = card,
-                        onClick = { onAttractionClick(card.attractionId) }
+                        onClick = {
+                            presenter.selectAttraction(context, card.attractionId)
+                            onAttractionClick()
+                        }
                     )
                 }
             }
@@ -184,8 +186,8 @@ private fun AttractionResultCard(
                 .padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            StayPhotoPlaceholder(
-                title = card.title,
+            BookingReferenceImage(
+                assetPath = card.imageAssetPath,
                 modifier = Modifier.size(width = 104.dp, height = 132.dp),
                 compact = true
             )

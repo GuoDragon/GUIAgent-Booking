@@ -41,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.common.FlightFareOption
 import com.example.booking.presentation.flights.common.FlightFlexibleTicketOption
 import com.example.booking.ui.components.BookingBackTopBar
@@ -73,7 +72,7 @@ fun FlightFareScreen(
     }
     val presenter = remember(view) { FlightFarePresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -119,7 +118,10 @@ fun FlightFareScreen(
                 items(uiState.options) { option ->
                     FareOptionCard(
                         option = option,
-                        onClick = { presenter.applyFare(option.option) }
+                        onClick = {
+                            presenter.applyFare(option.option)
+                            presenter.loadData(context)
+                        }
                     )
                 }
             }
@@ -148,7 +150,7 @@ fun FlightLuggageScreen(
     }
     val presenter = remember(view) { FlightLuggagePresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -287,16 +289,20 @@ fun FlightLuggageScreen(
 fun FlightMealChoiceScreen(
     onBackClick: () -> Unit
 ) {
-    val options = listOf(
-        "No preference",
-        "Vegetarian - free",
-        "Vegan - free",
-        "Lactose-free - free",
-        "Gluten-free - free",
-        "Kosher - free",
-        "Halal - free"
-    )
-    val currentMeal = FlightDraftStore.snapshot().selectedMeal
+    var uiState by remember { mutableStateOf(FlightMealChoiceUiState()) }
+
+    val view = remember {
+        object : FlightMealChoiceContract.View {
+            override fun showState(state: FlightMealChoiceUiState) {
+                uiState = state
+            }
+        }
+    }
+    val presenter = remember(view) { FlightMealChoicePresenter(view) }
+
+    LaunchedEffect(presenter) {
+        presenter.loadData()
+    }
 
     Scaffold(
         topBar = {
@@ -314,15 +320,15 @@ fun FlightMealChoiceScreen(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(options) { option ->
+            items(uiState.options) { option ->
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            FlightDraftStore.update { draft -> draft.copy(selectedMeal = option) }
+                            presenter.selectMeal(option)
                             onBackClick()
                         },
-                    color = if (option == currentMeal) Color(0xFFE9F3FF) else BookingWhite,
+                    color = if (option == uiState.selectedMeal) Color(0xFFE9F3FF) else BookingWhite,
                     shape = RoundedCornerShape(14.dp)
                 ) {
                     Row(
@@ -333,9 +339,9 @@ fun FlightMealChoiceScreen(
                             text = option,
                             modifier = Modifier.weight(1f),
                             color = BookingTextPrimary,
-                            fontWeight = if (option == currentMeal) FontWeight.SemiBold else FontWeight.Normal
+                            fontWeight = if (option == uiState.selectedMeal) FontWeight.SemiBold else FontWeight.Normal
                         )
-                        if (option == currentMeal) {
+                        if (option == uiState.selectedMeal) {
                             Text(text = "Check", color = BookingBlueLight)
                         }
                     }
@@ -362,7 +368,7 @@ fun FlightSeatSelectionScreen(
     }
     val presenter = remember(view) { FlightSeatPresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -449,7 +455,7 @@ fun FlightTravelerDetailsScreen(
     }
     val presenter = remember(view) { FlightTravelerDetailsPresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 
@@ -545,7 +551,7 @@ fun FlightTravelerContactScreen(
     }
     val presenter = remember(view) { FlightTravelerContactPresenter(view) }
 
-    LaunchedEffect(presenter, context, FlightDraftStore.snapshot()) {
+    LaunchedEffect(presenter, context) {
         presenter.loadData(context)
     }
 

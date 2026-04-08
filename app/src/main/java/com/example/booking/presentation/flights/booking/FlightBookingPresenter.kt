@@ -95,6 +95,36 @@ class FlightLuggagePresenter(
     )
 }
 
+class FlightMealChoicePresenter(
+    private val view: FlightMealChoiceContract.View
+) : FlightMealChoiceContract.Presenter {
+
+    private val options = listOf(
+        "No preference",
+        "Vegetarian - free",
+        "Vegan - free",
+        "Lactose-free - free",
+        "Gluten-free - free",
+        "Kosher - free",
+        "Halal - free"
+    )
+
+    override fun loadData() {
+        val draft = FlightDraftStore.snapshot()
+        view.showState(
+            FlightMealChoiceUiState(
+                options = options,
+                selectedMeal = draft.selectedMeal
+            )
+        )
+    }
+
+    override fun selectMeal(option: String) {
+        FlightDraftStore.update { draft -> draft.copy(selectedMeal = option) }
+        loadData()
+    }
+}
+
 class FlightSeatPresenter(
     private val view: FlightSeatContract.View
 ) : FlightSeatContract.Presenter {

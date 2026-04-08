@@ -53,6 +53,8 @@ object BookingRoutes {
     const val TaxiTime = "taxi_time"
     const val TaxiPassengers = "taxi_passengers"
     const val TaxiResults = "taxi_results"
+    const val TaxiAddFlightTracking = "taxi_add_flight_tracking"
+    const val TaxiChooseFlight = "taxi_choose_flight"
     const val TaxiContactDetails = "taxi_contact_details"
     const val TaxiOverview = "taxi_overview"
     const val TaxiBookingSuccess = "taxi_booking_success"

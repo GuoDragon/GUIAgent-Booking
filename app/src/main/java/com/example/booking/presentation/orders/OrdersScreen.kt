@@ -18,7 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Luggage
 import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,10 +40,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.booking.data.DataRepository
 import com.example.booking.ui.components.BookingEmptyState
 import com.example.booking.ui.components.BookingHomeTopBar
+import com.example.booking.ui.components.BookingPrimaryButton
 import com.example.booking.ui.components.BookingRoundedCard
+import com.example.booking.ui.components.BookingSheetHandle
 import com.example.booking.ui.components.BookingStatusChip
 import com.example.booking.ui.components.BookingTopBarAction
 import com.example.booking.ui.theme.BookingBlue
@@ -55,9 +59,9 @@ import com.example.booking.ui.theme.BookingWhite
 @Composable
 fun OrdersScreen() {
     val context = LocalContext.current.applicationContext
-    val runtimeDataVersion by DataRepository.observeRuntimeDataVersion().collectAsState()
     var uiState by remember { mutableStateOf(OrdersUiState()) }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var reviewTargetOrder by remember { mutableStateOf<OrderCardUiModel?>(null) }
 
     val view = remember {
         object : OrdersContract.View {
@@ -67,6 +71,7 @@ fun OrdersScreen() {
         }
     }
     val presenter = remember(view) { OrdersPresenter(view) }
+    val runtimeDataVersion by presenter.observeRuntimeVersion().collectAsState()
 
     LaunchedEffect(presenter, context, runtimeDataVersion) {
         presenter.loadData(context)
@@ -142,10 +147,33 @@ fun OrdersScreen() {
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(selectedOrders, key = { it.orderId }) { order ->
-                        OrderCard(order = order)
+                        OrderCard(
+                            order = order,
+                            onReviewClick = {
+                                if (order.showReviewAction) {
+                                    reviewTargetOrder = order
+                                }
+                            }
+                        )
                     }
                 }
             }
+        }
+
+        reviewTargetOrder?.let { targetOrder ->
+            HotelReviewSheet(
+                order = targetOrder,
+                onDismissRequest = { reviewTargetOrder = null },
+                onSubmit = { rating, comment ->
+                    presenter.saveHotelReview(
+                        context = context,
+                        orderId = targetOrder.orderId,
+                        rating = rating,
+                        comment = comment
+                    )
+                    reviewTargetOrder = null
+                }
+            )
         }
     }
 }
@@ -179,7 +207,10 @@ private fun OrdersTab(
 }
 
 @Composable
-private fun OrderCard(order: OrderCardUiModel) {
+private fun OrderCard(
+    order: OrderCardUiModel,
+    onReviewClick: () -> Unit
+) {
     val chipColors = when (order.status) {
         "ACTIVE" -> Pair(Color(0xFFDDF4DE), BookingGreen)
         "CANCELLED" -> Pair(Color(0xFFFFE2E0), BookingRed)
@@ -239,6 +270,121 @@ private fun OrderCard(order: OrderCardUiModel) {
             color = BookingTextSecondary,
             modifier = Modifier.padding(top = 12.dp)
         )
+        if (order.showReviewAction) {
+            if (order.reviewRating != null) {
+                Text(
+                    text = "Your rating: ${order.reviewRating}/5",
+                    color = BookingTextPrimary,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+                if (order.reviewComment.isNotBlank()) {
+                    Text(
+                        text = order.reviewComment,
+                        color = BookingTextSecondary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                if (order.reviewUpdatedOn.isNotBlank()) {
+                    Text(
+                        text = order.reviewUpdatedOn,
+                        color = BookingTextSecondary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+            Surface(
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .clickable(onClick = onReviewClick),
+                shape = RoundedCornerShape(10.dp),
+                color = BookingWhite,
+                border = BorderStroke(1.dp, BookingBlueLight)
+            ) {
+                Text(
+                    text = order.reviewActionLabel,
+                    color = BookingBlue,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HotelReviewSheet(
+    order: OrderCardUiModel,
+    onDismissRequest: () -> Unit,
+    onSubmit: (Int, String) -> Unit
+) {
+    var rating by remember(order.orderId, order.reviewRating) {
+        mutableIntStateOf(order.reviewRating ?: 5)
+    }
+    var comment by remember(order.orderId, order.reviewComment) {
+        mutableStateOf(order.reviewComment)
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        containerColor = BookingWhite,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 24.dp)
+        ) {
+            BookingSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text(
+                text = "Rate your stay",
+                color = BookingTextPrimary,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 14.dp)
+            )
+            Text(
+                text = order.itemName,
+                color = BookingTextSecondary,
+                modifier = Modifier.padding(top = 6.dp)
+            )
+            Row(
+                modifier = Modifier.padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                (1..5).forEach { score ->
+                    Surface(
+                        shape = RoundedCornerShape(999.dp),
+                        color = if (score <= rating) BookingBlueLight.copy(alpha = 0.18f) else BookingWhite,
+                        border = BorderStroke(1.dp, if (score <= rating) BookingBlueLight else BookingGray),
+                        modifier = Modifier.clickable { rating = score }
+                    ) {
+                        Text(
+                            text = "$score",
+                            color = if (score <= rating) BookingBlue else BookingTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+            OutlinedTextField(
+                value = comment,
+                onValueChange = { comment = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 14.dp),
+                minLines = 3,
+                maxLines = 5,
+                placeholder = { Text("Write your review") }
+            )
+            BookingPrimaryButton(
+                text = "Submit review",
+                modifier = Modifier.padding(top = 16.dp),
+                onClick = { onSubmit(rating, comment) }
+            )
+        }
     }
 }
 

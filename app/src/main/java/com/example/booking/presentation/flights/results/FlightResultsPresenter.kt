@@ -54,6 +54,11 @@ class FlightResultsPresenter(
         )
     }
 
+    override fun selectItinerary(context: Context, outboundId: String?, returnId: String?) {
+        FlightDraftStore.selectItinerary(outboundId, returnId)
+        loadData(context)
+    }
+
     private fun expandCards(itineraries: List<FlightItinerary>): List<FlightResultCardUiModel> {
         if (itineraries.isEmpty()) return emptyList()
         val targetCount = maxOf(6, itineraries.size * 2)

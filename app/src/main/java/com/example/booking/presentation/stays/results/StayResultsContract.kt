@@ -12,6 +12,7 @@ interface StayResultsContract {
     interface Presenter {
         fun loadData(context: Context)
         fun recordMapOpened(context: Context)
+        fun selectHotel(context: Context, hotelId: String)
     }
 }
 
@@ -31,6 +32,7 @@ data class StayHotelCardUiModel(
     val city: String,
     val country: String,
     val starRating: Int,
+    val reviewScoreText: String,
     val ratingText: String,
     val reviewCountText: String,
     val locationText: String,

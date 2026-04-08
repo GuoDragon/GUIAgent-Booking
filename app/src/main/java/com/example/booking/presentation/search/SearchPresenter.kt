@@ -7,11 +7,13 @@ import com.example.booking.data.DataRepository
 import com.example.booking.model.SearchSignal
 import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
+import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraft
 import com.example.booking.presentation.flightplushotel.FlightPlusHotelDraftStore
 import com.example.booking.presentation.flights.common.FlightDraftStore
 import com.example.booking.presentation.flights.common.FlightTripType
 import com.example.booking.presentation.stays.common.StayDraftStore
 import com.example.booking.presentation.taxi.common.TaxiDraftStore
+import com.example.booking.presentation.taxi.common.TaxiTripType
 import java.util.UUID
 import kotlin.math.max
 
@@ -124,18 +126,31 @@ class SearchPresenter(
                     children = stayDraft.childCount
                 ),
                 flightTripType = flightDraft.tripType,
+                flightDepartureCode = flightDraft.departureAirportCode,
+                flightArrivalCode = flightDraft.arrivalAirportCode,
                 flightDepartureLabel = airportLabel(flightDraft.departureAirportCode, airportMap),
                 flightArrivalLabel = airportLabel(flightDraft.arrivalAirportCode, airportMap),
                 flightDateLabel = BookingFormatters.formatStayDateRange(
                     flightDraft.departureDate,
                     flightDraft.returnDate
                 ),
+                flightAdultCount = flightDraft.adultCount,
+                flightCabinClass = flightDraft.cabinClass,
                 flightPassengerLabel = buildFlightPassengerLabel(flightDraft.adultCount, flightDraft.cabinClass),
                 flightDirectOnly = flightDraft.directFlightsOnly,
                 flightHotelTripType = flightHotelDraft.tripType,
+                flightHotelDepartureCode = flightHotelDraft.departureAirportCode,
+                flightHotelArrivalCode = flightHotelDraft.arrivalAirportCode,
                 flightHotelDepartureLabel = airportLabel(flightHotelDraft.departureAirportCode, airportMap),
                 flightHotelArrivalLabel = airportLabel(flightHotelDraft.arrivalAirportCode, airportMap),
+                flightHotelDepartureDate = flightHotelDraft.departureDate,
+                flightHotelPassengerCount = flightHotelDraft.passengerCount,
+                flightHotelCabinClass = flightHotelDraft.cabinClass,
+                flightHotelRoomCount = flightHotelDraft.roomCount,
                 flightHotelDepartureDateLabel = BookingFormatters.formatLongLocalDate(flightHotelDraft.departureDate),
+                flightHotelStayDestinationQuery = flightHotelDraft.stayDestinationQuery,
+                flightHotelCheckInDate = flightHotelDraft.checkInDate,
+                flightHotelCheckOutDate = flightHotelDraft.checkOutDate,
                 flightHotelPassengerLabel = buildFlightHotelPassengerLabel(
                     passengers = flightHotelDraft.passengerCount,
                     cabinClass = flightHotelDraft.cabinClass,
@@ -160,13 +175,21 @@ class SearchPresenter(
                 ),
                 flightHotelDifferentCityAndDates = flightHotelDraft.differentCityAndDates,
                 carReturnToSameLocation = carDraft.returnToSameLocation,
+                carPickupLocation = carDraft.pickupLocation,
                 carPickupLocationLabel = carDraft.pickupLocation,
                 carDateLabel = buildCarRentalDateLabel(carDraft),
-                carDriverAgeLabel = "Driver's age: ${carDraft.driverAgeBand}",
+                carDriverAgeText = carDraft.driverAgeText,
                 taxiTripType = taxiDraft.tripType,
+                taxiPickupLocation = taxiDraft.pickupLocation,
+                taxiDestination = taxiDraft.destination,
+                taxiPickupDateTime = taxiDraft.pickupDateTime,
+                taxiReturnDateTime = taxiDraft.returnDateTime,
+                taxiReturnDateTimeConfirmed = taxiDraft.returnDateTimeConfirmed,
+                taxiPassengerCount = taxiDraft.passengerCount,
                 taxiPickupLocationLabel = taxiDraft.pickupLocation,
                 taxiDestinationLabel = taxiDraft.destination,
                 taxiTimeLabel = buildTaxiTimeLabel(taxiDraft),
+                taxiReturnTimeLabel = buildTaxiReturnTimeLabel(taxiDraft),
                 taxiPassengerLabel = "${taxiDraft.passengerCount} passenger" + if (taxiDraft.passengerCount == 1) "" else "s",
                 taxiRecentItems = taxiRecentItems,
                 attractionDestinationLabel = attractionDraft.destinationQuery,
@@ -200,10 +223,216 @@ class SearchPresenter(
         )
     }
 
-    override fun applyFeaturedDestination(destination: String) {
+    override fun applyFeaturedDestination(context: Context, destination: String) {
         StayDraftStore.update { draft ->
             draft.copy(destinationQuery = destination.trim())
         }
+        loadData(context)
+    }
+
+    override fun selectFlightTripType(context: Context, tripType: FlightTripType) {
+        FlightDraftStore.update { draft -> draft.copy(tripType = tripType) }
+        loadData(context)
+    }
+
+    override fun selectFlightDepartureAirport(context: Context, airportCode: String) {
+        FlightDraftStore.update { draft -> draft.copy(departureAirportCode = airportCode) }
+        loadData(context)
+    }
+
+    override fun selectFlightArrivalAirport(context: Context, airportCode: String) {
+        FlightDraftStore.update { draft -> draft.copy(arrivalAirportCode = airportCode) }
+        loadData(context)
+    }
+
+    override fun swapFlightAirports(context: Context) {
+        FlightDraftStore.update { draft ->
+            draft.copy(
+                departureAirportCode = draft.arrivalAirportCode,
+                arrivalAirportCode = draft.departureAirportCode
+            )
+        }
+        loadData(context)
+    }
+
+    override fun changeFlightAdultCount(context: Context, delta: Int) {
+        FlightDraftStore.update { draft ->
+            draft.copy(adultCount = (draft.adultCount + delta).coerceIn(1, 6))
+        }
+        loadData(context)
+    }
+
+    override fun selectFlightCabinClass(context: Context, cabinClass: String) {
+        FlightDraftStore.update { draft -> draft.copy(cabinClass = cabinClass) }
+        loadData(context)
+    }
+
+    override fun setFlightDirectOnly(context: Context, checked: Boolean) {
+        FlightDraftStore.update { draft -> draft.copy(directFlightsOnly = checked) }
+        loadData(context)
+    }
+
+    override fun selectFlightHotelTripType(context: Context, tripType: FlightHotelTripType) {
+        updateFlightHotelDraft(context = context) { draft -> draft.copy(tripType = tripType) }
+    }
+
+    override fun selectFlightHotelDepartureAirport(context: Context, airportCode: String) {
+        updateFlightHotelDraft(context = context) { draft -> draft.copy(departureAirportCode = airportCode) }
+    }
+
+    override fun selectFlightHotelArrivalAirport(context: Context, airportCode: String) {
+        updateFlightHotelDraft(context = context) { draft -> draft.copy(arrivalAirportCode = airportCode) }
+    }
+
+    override fun setFlightHotelDepartureDate(context: Context, departureDate: java.time.LocalDate) {
+        updateFlightHotelDraft(context = context) { draft -> draft.copy(departureDate = departureDate) }
+    }
+
+    override fun changeFlightHotelPassengerCount(context: Context, delta: Int) {
+        updateFlightHotelDraft(context = context) { draft ->
+            draft.copy(passengerCount = (draft.passengerCount + delta).coerceIn(1, 6))
+        }
+    }
+
+    override fun changeFlightHotelRoomCount(context: Context, delta: Int) {
+        updateFlightHotelDraft(context = context) { draft ->
+            draft.copy(roomCount = (draft.roomCount + delta).coerceIn(1, 4))
+        }
+    }
+
+    override fun selectFlightHotelCabinClass(context: Context, cabinClass: String) {
+        updateFlightHotelDraft(context = context) { draft -> draft.copy(cabinClass = cabinClass) }
+    }
+
+    override fun setFlightHotelDifferentCityAndDates(
+        context: Context,
+        checked: Boolean,
+        airportOptions: List<AirportOptionUiModel>
+    ) {
+        updateFlightHotelDraft(context = context, airportOptions = airportOptions) { draft ->
+            draft.copy(differentCityAndDates = checked)
+        }
+    }
+
+    override fun selectFlightHotelStayDestination(
+        context: Context,
+        destination: String,
+        airportOptions: List<AirportOptionUiModel>
+    ) {
+        updateFlightHotelDraft(context = context, airportOptions = airportOptions) { draft ->
+            draft.copy(stayDestinationQuery = destination)
+        }
+    }
+
+    override fun shiftFlightHotelStayDates(
+        context: Context,
+        days: Long,
+        airportOptions: List<AirportOptionUiModel>
+    ) {
+        updateFlightHotelDraft(context = context, airportOptions = airportOptions) { draft ->
+            draft.copy(
+                checkInDate = draft.checkInDate.plusDays(days),
+                checkOutDate = draft.checkOutDate.plusDays(days)
+            )
+        }
+    }
+
+    override fun setCarReturnToSameLocation(context: Context, checked: Boolean) {
+        CarRentalDraftStore.update { draft -> draft.copy(returnToSameLocation = checked) }
+        loadData(context)
+    }
+
+    override fun selectCarPickupLocation(context: Context, pickupLocation: String) {
+        CarRentalDraftStore.update { draft -> draft.copy(pickupLocation = pickupLocation) }
+        loadData(context)
+    }
+
+    override fun setCarDriverAge(context: Context, value: String) {
+        CarRentalDraftStore.update { draft ->
+            draft.copy(driverAgeText = value.filter(Char::isDigit))
+        }
+        loadData(context)
+    }
+
+    override fun selectTaxiTripType(context: Context, tripType: TaxiTripType) {
+        TaxiDraftStore.update { draft ->
+            val minimumReturnTime = draft.pickupDateTime.plusHours(1)
+            draft.copy(
+                tripType = tripType,
+                returnDateTime = if (tripType == TaxiTripType.RoundTrip) {
+                    if (draft.returnDateTime.isAfter(minimumReturnTime)) {
+                        draft.returnDateTime
+                    } else {
+                        minimumReturnTime
+                    }
+                } else {
+                    draft.pickupDateTime.plusHours(6)
+                },
+                returnDateTimeConfirmed = if (tripType == TaxiTripType.RoundTrip) {
+                    draft.returnDateTimeConfirmed
+                } else {
+                    false
+                }
+            )
+        }
+        loadData(context)
+    }
+
+    override fun setTaxiRoute(context: Context, pickupLocation: String, destination: String) {
+        TaxiDraftStore.update { draft ->
+            draft.copy(
+                pickupLocation = pickupLocation.ifBlank { draft.pickupLocation },
+                destination = destination.ifBlank { draft.destination }
+            )
+        }
+        loadData(context)
+    }
+
+    override fun setTaxiPickupDateTime(context: Context, pickupDateTime: java.time.LocalDateTime) {
+        TaxiDraftStore.update { draft ->
+            val minimumReturnTime = pickupDateTime.plusHours(1)
+            val normalizedReturnTime = if (draft.returnDateTime.isAfter(minimumReturnTime)) {
+                draft.returnDateTime
+            } else {
+                minimumReturnTime
+            }
+            draft.copy(
+                pickupDateTime = pickupDateTime,
+                returnDateTime = if (draft.tripType == TaxiTripType.RoundTrip) {
+                    normalizedReturnTime
+                } else {
+                    pickupDateTime.plusHours(6)
+                },
+                returnDateTimeConfirmed = if (draft.tripType == TaxiTripType.RoundTrip) {
+                    draft.returnDateTimeConfirmed
+                } else {
+                    false
+                }
+            )
+        }
+        loadData(context)
+    }
+
+    override fun setTaxiReturnDateTime(context: Context, returnDateTime: java.time.LocalDateTime) {
+        TaxiDraftStore.update { draft ->
+            val minimumReturnTime = draft.pickupDateTime.plusHours(1)
+            draft.copy(
+                returnDateTime = if (returnDateTime.isAfter(minimumReturnTime)) {
+                    returnDateTime
+                } else {
+                    minimumReturnTime
+                },
+                returnDateTimeConfirmed = true
+            )
+        }
+        loadData(context)
+    }
+
+    override fun setTaxiPassengerCount(context: Context, passengerCount: Int) {
+        TaxiDraftStore.update { draft ->
+            draft.copy(passengerCount = passengerCount.coerceIn(1, 8))
+        }
+        loadData(context)
     }
 
     override fun submitStaySearch(context: Context) {
@@ -343,8 +572,8 @@ class SearchPresenter(
                 searchType = "TAXI_SEARCH_SUBMITTED",
                 destination = "${draft.pickupLocation} -> ${draft.destination}",
                 checkInDate = BookingFormatters.localDateTimeToEpochMillis(draft.pickupDateTime),
-                checkOutDate = if (draft.tripType == com.example.booking.presentation.taxi.common.TaxiTripType.RoundTrip) {
-                    BookingFormatters.localDateTimeToEpochMillis(draft.returnDateTime)
+                checkOutDate = if (draft.tripType == TaxiTripType.RoundTrip) {
+                    draft.returnDateTime.takeIf { draft.returnDateTimeConfirmed }?.let(BookingFormatters::localDateTimeToEpochMillis)
                 } else {
                     null
                 },
@@ -404,16 +633,77 @@ class SearchPresenter(
     private fun buildTaxiTimeLabel(
         draft: com.example.booking.presentation.taxi.common.TaxiDraft
     ): String {
-        return if (draft.tripType == com.example.booking.presentation.taxi.common.TaxiTripType.RoundTrip) {
-            "${BookingFormatters.formatShortLocalDate(draft.pickupDateTime.toLocalDate())} ${
-                BookingFormatters.formatTime(draft.pickupDateTime)
-            } - ${BookingFormatters.formatShortLocalDate(draft.returnDateTime.toLocalDate())} ${
+        return "${BookingFormatters.formatShortLocalDate(draft.pickupDateTime.toLocalDate())} at ${
+            BookingFormatters.formatTime(draft.pickupDateTime)
+        }"
+    }
+
+    private fun buildTaxiReturnTimeLabel(
+        draft: com.example.booking.presentation.taxi.common.TaxiDraft
+    ): String {
+        return if (draft.returnDateTimeConfirmed) {
+            "${BookingFormatters.formatShortLocalDate(draft.returnDateTime.toLocalDate())} at ${
                 BookingFormatters.formatTime(draft.returnDateTime)
             }"
         } else {
-            "${BookingFormatters.formatShortLocalDate(draft.pickupDateTime.toLocalDate())} at ${
-                BookingFormatters.formatTime(draft.pickupDateTime)
-            }"
+            "Add a return time"
         }
+    }
+
+    private fun updateFlightHotelDraft(
+        context: Context,
+        airportOptions: List<AirportOptionUiModel>? = null,
+        transform: (FlightPlusHotelDraft) -> FlightPlusHotelDraft
+    ) {
+        val resolvedAirportOptions = resolveFlightHotelAirportOptions(context, airportOptions)
+        FlightPlusHotelDraftStore.update { current ->
+            normalizeFlightHotelDraft(transform(current), resolvedAirportOptions)
+        }
+        loadData(context)
+    }
+
+    private fun resolveFlightHotelAirportOptions(
+        context: Context,
+        providedOptions: List<AirportOptionUiModel>?
+    ): List<AirportOptionUiModel> {
+        if (!providedOptions.isNullOrEmpty()) {
+            return providedOptions
+        }
+        val airports = DataRepository.loadAirports(context)
+        val airportMap = airports.associateBy { it.code }
+        return airports.map { airport ->
+            AirportOptionUiModel(
+                code = airport.code,
+                label = airportLabel(airport.code, airportMap),
+                city = airport.city
+            )
+        }
+    }
+
+    private fun normalizeFlightHotelDraft(
+        draft: FlightPlusHotelDraft,
+        airportOptions: List<AirportOptionUiModel>
+    ): FlightPlusHotelDraft {
+        val arrivalCity = airportOptions.firstOrNull { it.code == draft.arrivalAirportCode }?.city
+            ?: draft.stayDestinationQuery
+        val normalizedCheckIn = if (draft.differentCityAndDates) draft.checkInDate else draft.departureDate
+        val desiredCheckOut = if (draft.differentCityAndDates) draft.checkOutDate else draft.departureDate.plusDays(2)
+        val normalizedCheckOut = if (desiredCheckOut <= normalizedCheckIn) {
+            normalizedCheckIn.plusDays(2)
+        } else {
+            desiredCheckOut
+        }
+
+        return draft.copy(
+            passengerCount = draft.passengerCount.coerceAtLeast(1),
+            roomCount = draft.roomCount.coerceAtLeast(1),
+            stayDestinationQuery = if (draft.differentCityAndDates) {
+                draft.stayDestinationQuery.ifBlank { arrivalCity }
+            } else {
+                arrivalCity
+            },
+            checkInDate = normalizedCheckIn,
+            checkOutDate = normalizedCheckOut
+        )
     }
 }
