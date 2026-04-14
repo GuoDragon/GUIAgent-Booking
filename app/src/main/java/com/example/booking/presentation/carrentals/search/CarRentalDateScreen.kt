@@ -49,17 +49,19 @@ fun CarRentalDateScreen(
     onBackClick: () -> Unit,
     onApplyClick: () -> Unit
 ) {
+    val initialPickupDate = LocalDate.now().plusDays(2)
+    val initialReturnDate = initialPickupDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
     var uiState by remember {
         mutableStateOf(
             CarRentalDateUiState(
-                pickupDateTime = LocalDateTime.now(),
-                returnDateTime = LocalDateTime.now().plusDays(2),
+                pickupDateTime = initialPickupDate.atTime(12, 0),
+                returnDateTime = initialReturnDate.atTime(12, 0),
                 calendarMonths = emptyList()
             )
         )
     }
-    var pickupDateText by rememberSaveable { mutableStateOf(LocalDate.now().plusDays(14).toString()) }
-    var returnDateText by rememberSaveable { mutableStateOf(LocalDate.now().plusDays(16).toString()) }
+    var pickupDateText by rememberSaveable { mutableStateOf(initialPickupDate.toString()) }
+    var returnDateText by rememberSaveable { mutableStateOf(initialReturnDate.toString()) }
     var selectingReturnDate by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
@@ -93,6 +95,35 @@ fun CarRentalDateScreen(
                         title = "Select dates",
                         description = "${BookingFormatters.formatLongLocalDate(pickupDate)}\n${BookingFormatters.formatLongLocalDate(returnDate)}"
                     )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CarRentalQuickDateChip(
+                            text = "Set pickup: day+2 12:00",
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                val quickPickupDate = LocalDate.now().plusDays(2)
+                                pickupDateText = quickPickupDate.toString()
+                                val parsedReturnDate = LocalDate.parse(returnDateText)
+                                if (!parsedReturnDate.isAfter(quickPickupDate)) {
+                                    returnDateText = quickPickupDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).toString()
+                                }
+                                selectingReturnDate = true
+                            }
+                        )
+                        CarRentalQuickDateChip(
+                            text = "Set return: next Monday 12:00",
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                val parsedPickupDate = LocalDate.parse(pickupDateText)
+                                returnDateText = parsedPickupDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).toString()
+                                selectingReturnDate = false
+                            }
+                        )
+                    }
                 }
             }
             androidx.compose.foundation.lazy.LazyColumn(
@@ -109,11 +140,15 @@ fun CarRentalDateScreen(
                         onDateSelected = { date ->
                             if (!selectingReturnDate) {
                                 pickupDateText = date.toString()
-                                returnDateText = date.toString()
+                                if (!returnDate.isAfter(date)) {
+                                    returnDateText = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).toString()
+                                }
                                 selectingReturnDate = true
                             } else if (date <= pickupDate) {
                                 pickupDateText = date.toString()
-                                returnDateText = date.toString()
+                                if (!returnDate.isAfter(date)) {
+                                    returnDateText = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).toString()
+                                }
                                 selectingReturnDate = true
                             } else {
                                 returnDateText = date.toString()
@@ -126,7 +161,7 @@ fun CarRentalDateScreen(
         }
         StayFooterBar(
             priceLine = "${BookingFormatters.formatShortLocalDate(pickupDate)} - ${BookingFormatters.formatShortLocalDate(returnDate)}",
-            subLine = "Pickup at 10:00 | Return at 10:00",
+            subLine = "Pickup at ${BookingFormatters.formatTime(uiState.pickupDateTime)} | Return at ${BookingFormatters.formatTime(uiState.returnDateTime)}",
             buttonText = "Select dates",
             modifier = Modifier.align(Alignment.BottomCenter),
             onClick = {
@@ -141,6 +176,29 @@ fun CarRentalDateScreen(
             onClick = onBackClick,
             modifier = Modifier.align(Alignment.TopStart),
             tint = BookingBlue
+        )
+    }
+}
+
+@Composable
+private fun CarRentalQuickDateChip(
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(10.dp),
+        color = BookingWhite,
+        border = androidx.compose.foundation.BorderStroke(1.dp, BookingBlue.copy(alpha = 0.4f))
+    ) {
+        Text(
+            text = text,
+            color = BookingBlue,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
         )
     }
 }

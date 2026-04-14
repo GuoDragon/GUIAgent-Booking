@@ -1,6 +1,8 @@
 package com.example.booking.presentation.carrentals.common
 
 import java.time.LocalDateTime
+import java.time.DayOfWeek
+import java.time.temporal.TemporalAdjusters
 
 enum class CarRentalSortOption(val title: String) {
     Recommended("Recommended"),
@@ -20,11 +22,26 @@ data class CarRentalFilterState(
 data class CarRentalDraft(
     val returnToSameLocation: Boolean = true,
     val pickupLocation: String = "London Heathrow Airport (LHR)",
-    val pickupDateTime: LocalDateTime = LocalDateTime.now().plusDays(14).withHour(10).withMinute(0),
-    val returnDateTime: LocalDateTime = LocalDateTime.now().plusDays(16).withHour(10).withMinute(0),
+    val pickupDateTime: LocalDateTime = defaultCarRentalPickupDateTime(),
+    val returnDateTime: LocalDateTime = defaultCarRentalReturnDateTime(pickupDateTime),
     val driverAgeText: String = "30",
+    val childSeatRequired: Boolean = true,
     val sortOption: CarRentalSortOption = CarRentalSortOption.Recommended,
     val filterState: CarRentalFilterState = CarRentalFilterState(),
     val selectedCarId: String? = null,
     val lastCreatedOrderId: String? = null
 )
+
+private fun defaultCarRentalPickupDateTime(): LocalDateTime {
+    return LocalDateTime.now()
+        .plusDays(2)
+        .withHour(12)
+        .withMinute(0)
+        .withSecond(0)
+        .withNano(0)
+}
+
+private fun defaultCarRentalReturnDateTime(pickupDateTime: LocalDateTime): LocalDateTime {
+    val nextMondayAfterPickup = pickupDateTime.toLocalDate().with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+    return nextMondayAfterPickup.atTime(12, 0)
+}

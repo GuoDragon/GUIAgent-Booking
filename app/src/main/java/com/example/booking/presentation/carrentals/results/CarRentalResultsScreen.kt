@@ -462,7 +462,7 @@ fun CarRentalDetailsScreen(
                 StayFooterBar(
                     priceLine = uiState.priceText,
                     subLine = uiState.totalLabel,
-                    buttonText = "Next step",
+                    buttonText = "Continue to booking",
                     onClick = onContinueClick
                 )
             }

@@ -1,5 +1,6 @@
 package com.example.booking.presentation.orders
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,8 +58,11 @@ import com.example.booking.ui.theme.BookingTextSecondary
 import com.example.booking.ui.theme.BookingWhite
 
 @Composable
-fun OrdersScreen() {
-    val context = LocalContext.current.applicationContext
+fun OrdersScreen(
+    onBookAgainClick: () -> Unit = {}
+) {
+    val localContext = LocalContext.current
+    val context = localContext.applicationContext
     var uiState by remember { mutableStateOf(OrdersUiState()) }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var reviewTargetOrder by remember { mutableStateOf<OrderCardUiModel?>(null) }
@@ -120,38 +124,73 @@ fun OrdersScreen() {
                 }
             }
 
-            if (selectedOrders.isEmpty()) {
-                val emptyTitle = when (selectedTabIndex) {
-                    0 -> "Your next trip starts here"
-                    1 -> "Revisit your travel history"
-                    else -> "Plans can always change"
-                }
-                val emptyDescription = when (selectedTabIndex) {
-                    0 -> "Upcoming bookings will appear here as soon as you make one."
-                    1 -> "Completed stays and rides will stay here for future inspiration."
-                    else -> "Cancelled trips remain here in case you want to book again."
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                item {
+                    OrdersQuickActionsCard(
+                        onCalculateSpentClick = {
+                            val amount = presenter.calculateSpentAmount(context)
+                            Toast.makeText(localContext, "Spent amount: $amount", Toast.LENGTH_SHORT).show()
+                        },
+                        onCancelFutureOrdersClick = {
+                            val affectedCount = presenter.cancelFutureActiveOrders(context)
+                            Toast.makeText(localContext, "Cancelled $affectedCount future active order(s)", Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
 
-                BookingEmptyState(
-                    icon = Icons.Filled.Luggage,
-                    title = emptyTitle,
-                    description = emptyDescription,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 24.dp)
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
+                uiState.nextUpcomingTrip?.let { upcomingTrip ->
+                    item {
+                        UpcomingTripCard(upcomingTrip = upcomingTrip)
+                    }
+                }
+
+                if (selectedOrders.isEmpty()) {
+                    item {
+                        val emptyTitle = when (selectedTabIndex) {
+                            0 -> "Your next trip starts here"
+                            1 -> "Revisit your travel history"
+                            else -> "Plans can always change"
+                        }
+                        val emptyDescription = when (selectedTabIndex) {
+                            0 -> "Upcoming bookings will appear here as soon as you make one."
+                            1 -> "Completed stays and rides will stay here for future inspiration."
+                            else -> "Cancelled trips remain here in case you want to book again."
+                        }
+
+                        BookingEmptyState(
+                            icon = Icons.Filled.Luggage,
+                            title = emptyTitle,
+                            description = emptyDescription,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp)
+                        )
+                    }
+                } else {
                     items(selectedOrders, key = { it.orderId }) { order ->
                         OrderCard(
                             order = order,
                             onReviewClick = {
                                 if (order.showReviewAction) {
                                     reviewTargetOrder = order
+                                }
+                            },
+                            onBookAgainClick = {
+                                if (order.showBookAgainAction) {
+                                    val prepared = presenter.prepareStayBookAgain(
+                                        context = context,
+                                        orderId = order.orderId
+                                    )
+                                    if (prepared) {
+                                        Toast.makeText(localContext, "Stay draft prepared", Toast.LENGTH_SHORT).show()
+                                        onBookAgainClick()
+                                    } else {
+                                        Toast.makeText(localContext, "Unable to prepare stay draft", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         )
@@ -175,6 +214,99 @@ fun OrdersScreen() {
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun OrdersQuickActionsCard(
+    onCalculateSpentClick: () -> Unit,
+    onCancelFutureOrdersClick: () -> Unit
+) {
+    BookingRoundedCard {
+        Text(
+            text = "Automation quick actions",
+            style = MaterialTheme.typography.titleMedium,
+            color = BookingTextPrimary,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Use these helpers for account tasks and runtime verification.",
+            color = BookingTextSecondary,
+            modifier = Modifier.padding(top = 6.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            QuickActionButton(
+                label = "Calculate spent amount",
+                modifier = Modifier.weight(1f),
+                onClick = onCalculateSpentClick
+            )
+            QuickActionButton(
+                label = "Cancel future bookings",
+                modifier = Modifier.weight(1f),
+                onClick = onCancelFutureOrdersClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuickActionButton(
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        color = BookingWhite,
+        border = BorderStroke(1.dp, BookingBlueLight)
+    ) {
+        Box(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = label,
+                color = BookingBlue,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun UpcomingTripCard(
+    upcomingTrip: UpcomingTripUiModel
+) {
+    BookingRoundedCard {
+        Text(
+            text = "Closest upcoming trip",
+            color = BookingTextPrimary,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = upcomingTrip.title,
+            color = BookingTextPrimary,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+        Text(
+            text = upcomingTrip.subtitle,
+            color = BookingTextPrimary,
+            modifier = Modifier.padding(top = 6.dp)
+        )
+        Text(
+            text = upcomingTrip.supportingText,
+            color = BookingTextSecondary,
+            modifier = Modifier.padding(top = 6.dp)
+        )
     }
 }
 
@@ -209,7 +341,8 @@ private fun OrdersTab(
 @Composable
 private fun OrderCard(
     order: OrderCardUiModel,
-    onReviewClick: () -> Unit
+    onReviewClick: () -> Unit,
+    onBookAgainClick: () -> Unit
 ) {
     val chipColors = when (order.status) {
         "ACTIVE" -> Pair(Color(0xFFDDF4DE), BookingGreen)
@@ -293,20 +426,49 @@ private fun OrderCard(
                     )
                 }
             }
-            Surface(
+        }
+
+        if (order.showReviewAction || order.showBookAgainAction) {
+            Row(
                 modifier = Modifier
-                    .padding(top = 12.dp)
-                    .clickable(onClick = onReviewClick),
-                shape = RoundedCornerShape(10.dp),
-                color = BookingWhite,
-                border = BorderStroke(1.dp, BookingBlueLight)
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text(
-                    text = order.reviewActionLabel,
-                    color = BookingBlue,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
-                )
+                if (order.showReviewAction) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(onClick = onReviewClick),
+                        shape = RoundedCornerShape(10.dp),
+                        color = BookingWhite,
+                        border = BorderStroke(1.dp, BookingBlueLight)
+                    ) {
+                        Text(
+                            text = order.reviewActionLabel,
+                            color = BookingBlue,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                        )
+                    }
+                }
+                if (order.showBookAgainAction) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(onClick = onBookAgainClick),
+                        shape = RoundedCornerShape(10.dp),
+                        color = BookingWhite,
+                        border = BorderStroke(1.dp, BookingBlueLight)
+                    ) {
+                        Text(
+                            text = order.bookAgainActionLabel,
+                            color = BookingBlue,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                        )
+                    }
+                }
             }
         }
     }
@@ -387,4 +549,3 @@ private fun HotelReviewSheet(
         }
     }
 }
-

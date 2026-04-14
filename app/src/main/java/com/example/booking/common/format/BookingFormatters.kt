@@ -13,6 +13,7 @@ import java.util.Locale
 
 object BookingFormatters {
 
+    private val appZoneId: ZoneId = ZoneId.of("Asia/Shanghai")
     private val shortDateFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH)
     private val fullDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         .withLocale(Locale.ENGLISH)
@@ -34,14 +35,14 @@ object BookingFormatters {
 
     fun formatShortDate(epochMillis: Long): String {
         return Instant.ofEpochMilli(epochMillis)
-            .atZone(ZoneId.systemDefault())
+            .atZone(appZoneId)
             .toLocalDate()
             .format(shortDateFormatter)
     }
 
     fun formatFullDate(epochMillis: Long): String {
         return Instant.ofEpochMilli(epochMillis)
-            .atZone(ZoneId.systemDefault())
+            .atZone(appZoneId)
             .toLocalDate()
             .format(fullDateFormatter)
     }
@@ -121,7 +122,7 @@ object BookingFormatters {
 
     fun formatTime(epochMillis: Long): String {
         return Instant.ofEpochMilli(epochMillis)
-            .atZone(ZoneId.systemDefault())
+            .atZone(appZoneId)
             .toLocalTime()
             .format(localTimeFormatter)
     }
@@ -161,16 +162,16 @@ object BookingFormatters {
     }
 
     fun localDateToEpochMillis(date: LocalDate): Long {
-        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        return date.atStartOfDay(appZoneId).toInstant().toEpochMilli()
     }
 
     fun localDateTimeToEpochMillis(dateTime: LocalDateTime): Long {
-        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        return dateTime.atZone(appZoneId).toInstant().toEpochMilli()
     }
 
     fun epochMillisToLocalDate(epochMillis: Long): LocalDate {
         return Instant.ofEpochMilli(epochMillis)
-            .atZone(ZoneId.systemDefault())
+            .atZone(appZoneId)
             .toLocalDate()
     }
 

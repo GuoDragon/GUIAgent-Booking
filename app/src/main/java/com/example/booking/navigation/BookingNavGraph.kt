@@ -90,7 +90,11 @@ fun BookingNavGraph(
             )
         }
         composable(BookingRoutes.Saved) { SavedScreen() }
-        composable(BookingRoutes.Orders) { OrdersScreen() }
+        composable(BookingRoutes.Orders) {
+            OrdersScreen(
+                onBookAgainClick = { navController.navigate(BookingRoutes.StayResults) }
+            )
+        }
         composable(BookingRoutes.Account) {
             AccountScreen(
                 onPersonalInfoClick = { navController.navigate(BookingRoutes.PersonalInfo) },

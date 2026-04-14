@@ -1,33 +1,27 @@
 [
   {
-    "code": "LHR",
-    "name": "Heathrow Airport",
-    "city": "London",
-    "country": "United Kingdom"
-  },
-  {
-    "code": "CDG",
-    "name": "Charles de Gaulle Airport",
-    "city": "Paris",
-    "country": "France"
-  },
-  {
-    "code": "JFK",
-    "name": "John F. Kennedy International Airport",
-    "city": "New York",
-    "country": "United States"
-  },
-  {
-    "code": "NRT",
-    "name": "Narita International Airport",
-    "city": "Tokyo",
-    "country": "Japan"
+    "code": "AMS",
+    "name": "Amsterdam Airport Schiphol",
+    "city": "Amsterdam",
+    "country": "Netherlands"
   },
   {
     "code": "BCN",
     "name": "Josep Tarradellas Barcelona-El Prat Airport",
     "city": "Barcelona",
     "country": "Spain"
+  },
+  {
+    "code": "BKK",
+    "name": "Suvarnabhumi Airport",
+    "city": "Bangkok",
+    "country": "Thailand"
+  },
+  {
+    "code": "CDG",
+    "name": "Charles de Gaulle Airport",
+    "city": "Paris",
+    "country": "France"
   },
   {
     "code": "DXB",
@@ -42,22 +36,10 @@
     "country": "Italy"
   },
   {
-    "code": "AMS",
-    "name": "Amsterdam Airport Schiphol",
-    "city": "Amsterdam",
-    "country": "Netherlands"
-  },
-  {
-    "code": "BKK",
-    "name": "Suvarnabhumi Airport",
-    "city": "Bangkok",
-    "country": "Thailand"
-  },
-  {
-    "code": "SYD",
-    "name": "Sydney Kingsford Smith Airport",
-    "city": "Sydney",
-    "country": "Australia"
+    "code": "HKG",
+    "name": "Hong Kong International Airport",
+    "city": "Hong Kong",
+    "country": "China"
   },
   {
     "code": "IST",
@@ -66,16 +48,34 @@
     "country": "Turkey"
   },
   {
+    "code": "JFK",
+    "name": "John F. Kennedy International Airport",
+    "city": "New York",
+    "country": "United States"
+  },
+  {
+    "code": "LHR",
+    "name": "Heathrow Airport",
+    "city": "London",
+    "country": "United Kingdom"
+  },
+  {
+    "code": "LIS",
+    "name": "Humberto Delgado Airport",
+    "city": "Lisbon",
+    "country": "Portugal"
+  },
+  {
+    "code": "NRT",
+    "name": "Narita International Airport",
+    "city": "Tokyo",
+    "country": "Japan"
+  },
+  {
     "code": "PRG",
     "name": "Vaclav Havel Airport Prague",
     "city": "Prague",
     "country": "Czech Republic"
-  },
-  {
-    "code": "VIE",
-    "name": "Vienna International Airport",
-    "city": "Vienna",
-    "country": "Austria"
   },
   {
     "code": "SIN",
@@ -84,9 +84,21 @@
     "country": "Singapore"
   },
   {
-    "code": "LIS",
-    "name": "Humberto Delgado Airport",
-    "city": "Lisbon",
-    "country": "Portugal"
+    "code": "SYD",
+    "name": "Sydney Kingsford Smith Airport",
+    "city": "Sydney",
+    "country": "Australia"
+  },
+  {
+    "code": "VIE",
+    "name": "Vienna International Airport",
+    "city": "Vienna",
+    "country": "Austria"
+  },
+  {
+    "code": "WUH",
+    "name": "Wuhan Tianhe International Airport",
+    "city": "Wuhan",
+    "country": "China"
   }
 ]

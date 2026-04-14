@@ -154,5 +154,18 @@
     "imageUrl": null,
     "fromPrice": 17,
     "currency": "USD"
+  },
+  {
+    "attractionId": "att013",
+    "name": "Richmond Green Riverside Reserve",
+    "city": "London",
+    "country": "United Kingdom",
+    "category": "Green Theme",
+    "description": "A green-themed riverside eco route in London featuring native gardens, low-carbon exhibits, and guided conservation walks.",
+    "rating": 4.6,
+    "reviewCount": 5820,
+    "imageUrl": null,
+    "fromPrice": 26,
+    "currency": "USD"
   }
 ]

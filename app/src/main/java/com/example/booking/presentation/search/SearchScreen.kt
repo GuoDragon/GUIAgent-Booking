@@ -1,8 +1,29 @@
 ﻿package com.example.booking.presentation.search
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.FlightTakeoff
+import androidx.compose.material.icons.filled.Hotel
+import androidx.compose.material.icons.filled.LocalActivity
+import androidx.compose.material.icons.filled.LocalTaxi
+import androidx.compose.material.icons.filled.Luggage
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,12 +31,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.example.booking.presentation.flightplushotel.FlightHotelTripType
 import com.example.booking.presentation.stays.input.StayGuestsSheet
 import com.example.booking.presentation.taxi.common.TaxiTripType
 import com.example.booking.ui.components.BookingHomeTopBar
 import com.example.booking.ui.components.BookingTopBarAction
+import com.example.booking.ui.theme.BookingBlue
+import com.example.booking.ui.theme.BookingBlueLight
+import com.example.booking.ui.theme.BookingGray
+import com.example.booking.ui.theme.BookingTextPrimary
+import com.example.booking.ui.theme.BookingWhite
 
 @Composable
 fun SearchScreen(
@@ -98,207 +129,218 @@ fun SearchScreen(
             }
         }
     ) { innerPadding ->
-        when (selectedProduct) {
-            SearchProduct.Stays -> StaysSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .background(BookingWhite)
+        ) {
+            SearchProductTopTabs(
+                selectedProduct = selectedProduct,
                 onProductSelected = ::selectProduct,
-                onDestinationClick = onStayDestinationClick,
-                onDateClick = onStayDateClick,
-                onGuestsClick = { showStayGuestsSheet = true },
-                onSearchClick = {
-                    presenter.submitStaySearch(context)
-                    onStaySearchClick()
-                },
-                onDestinationCardClick = { destination ->
-                    presenter.applyFeaturedDestination(context, destination)
-                    presenter.submitStaySearch(context)
-                    onStaySearchClick()
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             )
 
-            SearchProduct.Flights -> FlightsSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
-                onProductSelected = ::selectProduct,
-                onTripTypeSelected = { tripType ->
-                    presenter.selectFlightTripType(context, tripType)
-                },
-                onDepartureClick = {
-                    presenter.selectFlightDepartureAirport(
-                        context = context,
-                        airportCode = nextAirportCode(
-                            currentCode = uiState.flightDepartureCode,
-                            excludedCode = uiState.flightArrivalCode
-                        )
+            Box(modifier = Modifier.weight(1f)) {
+                when (selectedProduct) {
+                    SearchProduct.Stays -> StaysSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onDestinationClick = onStayDestinationClick,
+                        onDateClick = onStayDateClick,
+                        onGuestsClick = { showStayGuestsSheet = true },
+                        onSearchClick = {
+                            presenter.submitStaySearch(context)
+                            onStaySearchClick()
+                        },
+                        onDestinationCardClick = { destination ->
+                            presenter.applyFeaturedDestination(context, destination)
+                            presenter.submitStaySearch(context)
+                            onStaySearchClick()
+                        }
                     )
-                },
-                onArrivalClick = {
-                    presenter.selectFlightArrivalAirport(
-                        context = context,
-                        airportCode = nextAirportCode(
-                            currentCode = uiState.flightArrivalCode,
-                            excludedCode = uiState.flightDepartureCode
-                        )
-                    )
-                },
-                onSwapAirportsClick = {
-                    presenter.swapFlightAirports(context)
-                },
-                onDateClick = onFlightDateClick,
-                onAdultCountChange = { delta ->
-                    presenter.changeFlightAdultCount(context, delta)
-                },
-                onCabinClassClick = {
-                    presenter.selectFlightCabinClass(
-                        context = context,
-                        cabinClass = nextCabin(uiState.flightCabinClass)
-                    )
-                },
-                onDirectOnlyChanged = { checked ->
-                    presenter.setFlightDirectOnly(context, checked)
-                },
-                onSearchClick = {
-                    presenter.submitFlightSearch(context)
-                    onFlightSearchClick()
-                }
-            )
 
-            SearchProduct.FlightHotel -> FlightHotelSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
-                onProductSelected = ::selectProduct,
-                onTripTypeSelected = { tripType ->
-                    presenter.selectFlightHotelTripType(context, tripType)
-                },
-                onDepartureClick = {
-                    presenter.selectFlightHotelDepartureAirport(
-                        context = context,
-                        airportCode = nextAirportCode(
-                            currentCode = uiState.flightHotelDepartureCode,
-                            excludedCode = uiState.flightHotelArrivalCode
-                        )
+                    SearchProduct.Flights -> FlightsSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onTripTypeSelected = { tripType ->
+                            presenter.selectFlightTripType(context, tripType)
+                        },
+                        onDepartureClick = {
+                            presenter.selectFlightDepartureAirport(
+                                context = context,
+                                airportCode = nextAirportCode(
+                                    currentCode = uiState.flightDepartureCode,
+                                    excludedCode = uiState.flightArrivalCode
+                                )
+                            )
+                        },
+                        onArrivalClick = {
+                            presenter.selectFlightArrivalAirport(
+                                context = context,
+                                airportCode = nextAirportCode(
+                                    currentCode = uiState.flightArrivalCode,
+                                    excludedCode = uiState.flightDepartureCode
+                                )
+                            )
+                        },
+                        onSwapAirportsClick = {
+                            presenter.swapFlightAirports(context)
+                        },
+                        onDateClick = onFlightDateClick,
+                        onAdultCountChange = { delta ->
+                            presenter.changeFlightAdultCount(context, delta)
+                        },
+                        onCabinClassClick = {
+                            presenter.selectFlightCabinClass(
+                                context = context,
+                                cabinClass = nextCabin(uiState.flightCabinClass)
+                            )
+                        },
+                        onDirectOnlyChanged = { checked ->
+                            presenter.setFlightDirectOnly(context, checked)
+                        },
+                        onSearchClick = {
+                            presenter.submitFlightSearch(context)
+                            onFlightSearchClick()
+                        }
                     )
-                },
-                onArrivalClick = {
-                    presenter.selectFlightHotelArrivalAirport(
-                        context = context,
-                        airportCode = nextAirportCode(
-                            currentCode = uiState.flightHotelArrivalCode,
-                            excludedCode = uiState.flightHotelDepartureCode
-                        )
-                    )
-                },
-                onDepartureDateClick = {
-                    presenter.setFlightHotelDepartureDate(
-                        context = context,
-                        departureDate = uiState.flightHotelDepartureDate.plusDays(1)
-                    )
-                },
-                onPassengerCountChange = { delta ->
-                    presenter.changeFlightHotelPassengerCount(context, delta)
-                },
-                onRoomCountChange = { delta ->
-                    presenter.changeFlightHotelRoomCount(context, delta)
-                },
-                onCabinClassClick = {
-                    presenter.selectFlightHotelCabinClass(
-                        context = context,
-                        cabinClass = nextCabin(uiState.flightHotelCabinClass)
-                    )
-                },
-                onDifferentCityAndDatesChanged = { checked ->
-                    presenter.setFlightHotelDifferentCityAndDates(
-                        context = context,
-                        checked = checked,
-                        airportOptions = uiState.flightAirports
-                    )
-                },
-                onStayDestinationClick = {
-                    val options = buildList {
-                        uiState.flightAirports.firstOrNull { it.code == uiState.flightHotelArrivalCode }?.city?.let(::add)
-                        addAll(uiState.destinationCards.map { it.title })
-                    }.distinct()
-                    presenter.selectFlightHotelStayDestination(
-                        context = context,
-                        destination = nextFromList(uiState.flightHotelStayDestinationQuery, options),
-                        airportOptions = uiState.flightAirports
-                    )
-                },
-                onStayDatesClick = {
-                    presenter.shiftFlightHotelStayDates(
-                        context = context,
-                        days = 1,
-                        airportOptions = uiState.flightAirports
-                    )
-                },
-                onSearchClick = {
-                    presenter.submitFlightHotelSearch(context)
-                    onFlightHotelSearchClick()
-                }
-            )
 
-            SearchProduct.CarRental -> CarRentalSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
-                onProductSelected = ::selectProduct,
-                onReturnToSameLocationChanged = { checked ->
-                    presenter.setCarReturnToSameLocation(context, checked)
-                },
-                onPickupLocationClick = {
-                    presenter.selectCarPickupLocation(
-                        context = context,
-                        pickupLocation = nextFromList(uiState.carPickupLocation, uiState.carPickupLocations)
+                    SearchProduct.FlightHotel -> FlightHotelSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onTripTypeSelected = { tripType ->
+                            presenter.selectFlightHotelTripType(context, tripType)
+                        },
+                        onDepartureClick = {
+                            presenter.selectFlightHotelDepartureAirport(
+                                context = context,
+                                airportCode = nextAirportCode(
+                                    currentCode = uiState.flightHotelDepartureCode,
+                                    excludedCode = uiState.flightHotelArrivalCode
+                                )
+                            )
+                        },
+                        onArrivalClick = {
+                            presenter.selectFlightHotelArrivalAirport(
+                                context = context,
+                                airportCode = nextAirportCode(
+                                    currentCode = uiState.flightHotelArrivalCode,
+                                    excludedCode = uiState.flightHotelDepartureCode
+                                )
+                            )
+                        },
+                        onDepartureDateClick = {
+                            presenter.setFlightHotelDepartureDate(
+                                context = context,
+                                departureDate = uiState.flightHotelDepartureDate.plusDays(1)
+                            )
+                        },
+                        onPassengerCountChange = { delta ->
+                            presenter.changeFlightHotelPassengerCount(context, delta)
+                        },
+                        onRoomCountChange = { delta ->
+                            presenter.changeFlightHotelRoomCount(context, delta)
+                        },
+                        onCabinClassClick = {
+                            presenter.selectFlightHotelCabinClass(
+                                context = context,
+                                cabinClass = nextCabin(uiState.flightHotelCabinClass)
+                            )
+                        },
+                        onDifferentCityAndDatesChanged = { checked ->
+                            presenter.setFlightHotelDifferentCityAndDates(
+                                context = context,
+                                checked = checked,
+                                airportOptions = uiState.flightAirports
+                            )
+                        },
+                        onStayDestinationClick = {
+                            val options = buildList {
+                                uiState.flightAirports.firstOrNull { it.code == uiState.flightHotelArrivalCode }?.city?.let(::add)
+                                addAll(uiState.destinationCards.map { it.title })
+                            }.distinct()
+                            presenter.selectFlightHotelStayDestination(
+                                context = context,
+                                destination = nextFromList(uiState.flightHotelStayDestinationQuery, options),
+                                airportOptions = uiState.flightAirports
+                            )
+                        },
+                        onStayDatesClick = {
+                            presenter.shiftFlightHotelStayDates(
+                                context = context,
+                                days = 1,
+                                airportOptions = uiState.flightAirports
+                            )
+                        },
+                        onSearchClick = {
+                            presenter.submitFlightHotelSearch(context)
+                            onFlightHotelSearchClick()
+                        }
                     )
-                },
-                onDateClick = onCarDateClick,
-                onDriverAgeChange = { value ->
-                    presenter.setCarDriverAge(context, value)
-                },
-                onSearchClick = {
-                    presenter.submitCarRentalSearch(context)
-                    onCarSearchClick()
-                }
-            )
 
-            SearchProduct.Taxi -> TaxiSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
-                onProductSelected = ::selectProduct,
-                onTripTypeSelected = { tripType ->
-                    presenter.selectTaxiTripType(context, tripType)
-                    if (tripType != TaxiTripType.RoundTrip) {
-                        showTaxiReturnTimeSheet = false
-                    }
-                },
-                onPickupLocationClick = {
-                    taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Pickup.name
-                    showTaxiRoutePlanner = true
-                },
-                onDestinationClick = {
-                    taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Destination.name
-                    showTaxiRoutePlanner = true
-                },
-                onTimeClick = { showTaxiOutboundTimeSheet = true },
-                onReturnTimeClick = { showTaxiReturnTimeSheet = true },
-                onPassengersClick = { showTaxiPassengersSheet = true },
-                onSearchClick = {
-                    presenter.submitTaxiSearch(context)
-                    onTaxiSearchClick()
-                }
-            )
+                    SearchProduct.CarRental -> CarRentalSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onReturnToSameLocationChanged = { checked ->
+                            presenter.setCarReturnToSameLocation(context, checked)
+                        },
+                        onPickupLocationClick = {
+                            presenter.selectCarPickupLocation(
+                                context = context,
+                                pickupLocation = nextFromList(uiState.carPickupLocation, uiState.carPickupLocations)
+                            )
+                        },
+                        onDateClick = onCarDateClick,
+                        onDriverAgeChange = { value ->
+                            presenter.setCarDriverAge(context, value)
+                        },
+                        onSearchClick = {
+                            presenter.submitCarRentalSearch(context)
+                            onCarSearchClick()
+                        }
+                    )
 
-            SearchProduct.Attractions -> AttractionsSearchContent(
-                uiState = uiState,
-                topPadding = innerPadding.calculateTopPadding(),
-                onProductSelected = ::selectProduct,
-                onDestinationClick = onAttractionDestinationClick,
-                onDateClick = onAttractionDateClick,
-                onSearchClick = {
-                    presenter.submitAttractionSearch(context)
-                    onAttractionSearchClick()
+                    SearchProduct.Taxi -> TaxiSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onTripTypeSelected = { tripType ->
+                            presenter.selectTaxiTripType(context, tripType)
+                            if (tripType != TaxiTripType.RoundTrip) {
+                                showTaxiReturnTimeSheet = false
+                            }
+                        },
+                        onPickupLocationClick = {
+                            taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Pickup.name
+                            showTaxiRoutePlanner = true
+                        },
+                        onDestinationClick = {
+                            taxiRoutePlannerFocusName = TaxiRoutePlannerFocus.Destination.name
+                            showTaxiRoutePlanner = true
+                        },
+                        onTimeClick = { showTaxiOutboundTimeSheet = true },
+                        onReturnTimeClick = { showTaxiReturnTimeSheet = true },
+                        onPassengersClick = { showTaxiPassengersSheet = true },
+                        onSearchClick = {
+                            presenter.submitTaxiSearch(context)
+                            onTaxiSearchClick()
+                        }
+                    )
+
+                    SearchProduct.Attractions -> AttractionsSearchContent(
+                        uiState = uiState,
+                        topPadding = 0.dp,
+                        onDestinationClick = onAttractionDestinationClick,
+                        onDateClick = onAttractionDateClick,
+                        onSearchClick = {
+                            presenter.submitAttractionSearch(context)
+                            onAttractionSearchClick()
+                        }
+                    )
                 }
-            )
+            }
         }
 
         if (showStayGuestsSheet) {
@@ -321,10 +363,18 @@ fun SearchScreen(
         }
 
         if (showTaxiOutboundTimeSheet) {
+            val nowOption = java.time.LocalDateTime.now().withSecond(0).withNano(0)
+            val tomorrowNoonOption = java.time.LocalDate.now().plusDays(1).atTime(12, 0)
+            val dayAfterTomorrowMorningOption = java.time.LocalDate.now().plusDays(2).atTime(8, 0)
             TaxiScheduleTimeSheet(
                 title = "Schedule outbound ride",
                 helperText = "When do you want to be picked up?",
                 initialDateTime = uiState.taxiPickupDateTime,
+                quickOptions = listOf(
+                    TaxiQuickTimeOption(label = "Now", dateTime = nowOption),
+                    TaxiQuickTimeOption(label = "Tomorrow 12:00", dateTime = tomorrowNoonOption),
+                    TaxiQuickTimeOption(label = "Day+2 08:00", dateTime = dayAfterTomorrowMorningOption)
+                ),
                 onDismissRequest = { showTaxiOutboundTimeSheet = false },
                 onConfirm = { outboundDateTime ->
                     presenter.setTaxiPickupDateTime(context, outboundDateTime)
@@ -333,10 +383,16 @@ fun SearchScreen(
         }
 
         if (showTaxiReturnTimeSheet && uiState.taxiTripType == TaxiTripType.RoundTrip) {
+            val tomorrowNoonOption = java.time.LocalDate.now().plusDays(1).atTime(12, 0)
+            val dayAfterTomorrowMorningOption = java.time.LocalDate.now().plusDays(2).atTime(8, 0)
             TaxiScheduleTimeSheet(
                 title = "Schedule return ride",
                 helperText = "When do you want to be picked up?",
                 initialDateTime = uiState.taxiReturnDateTime,
+                quickOptions = listOf(
+                    TaxiQuickTimeOption(label = "Tomorrow 12:00", dateTime = tomorrowNoonOption),
+                    TaxiQuickTimeOption(label = "Day+2 08:00", dateTime = dayAfterTomorrowMorningOption)
+                ),
                 onDismissRequest = { showTaxiReturnTimeSheet = false },
                 onConfirm = { returnDateTime ->
                     presenter.setTaxiReturnDateTime(context, returnDateTime)
@@ -351,6 +407,80 @@ fun SearchScreen(
                 onDoneClick = { passengers ->
                     presenter.setTaxiPassengerCount(context, passengers)
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchProductTopTabs(
+    selectedProduct: SearchProduct,
+    onProductSelected: (SearchProduct) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val products = listOf(
+        SearchProduct.Stays to Icons.Filled.Hotel,
+        SearchProduct.Flights to Icons.Filled.FlightTakeoff,
+        SearchProduct.FlightHotel to Icons.Filled.Luggage,
+        SearchProduct.CarRental to Icons.Filled.DirectionsCar,
+        SearchProduct.Taxi to Icons.Filled.LocalTaxi,
+        SearchProduct.Attractions to Icons.Filled.LocalActivity
+    )
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        products.chunked(3).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { (product, icon) ->
+                    SearchProductTopChip(
+                        icon = icon,
+                        title = product.title,
+                        selected = product == selectedProduct,
+                        modifier = Modifier.weight(1f),
+                        onClick = { onProductSelected(product) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchProductTopChip(
+    icon: ImageVector,
+    title: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(999.dp),
+        color = if (selected) BookingBlueLight.copy(alpha = 0.12f) else BookingWhite,
+        border = androidx.compose.foundation.BorderStroke(1.dp, if (selected) BookingBlueLight else BookingGray)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (selected) BookingBlue else BookingTextPrimary,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                color = if (selected) BookingBlue else BookingTextPrimary,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                modifier = Modifier.padding(start = 6.dp)
             )
         }
     }

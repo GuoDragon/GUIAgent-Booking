@@ -298,5 +298,35 @@
     "currency": "USD",
     "validDays": 2,
     "cancellable": true
+  },
+  {
+    "ticketId": "tkt031",
+    "attractionId": "att013",
+    "ticketType": "Standard",
+    "description": "General admission to Richmond Green Riverside Reserve with self-guided eco trail access.",
+    "price": 26,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt032",
+    "attractionId": "att013",
+    "ticketType": "Skip-the-line",
+    "description": "Fast-track entry with dedicated lane and ranger-led green architecture briefing.",
+    "price": 45,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
+  },
+  {
+    "ticketId": "tkt033",
+    "attractionId": "att013",
+    "ticketType": "VIP",
+    "description": "VIP package with fast-track access, private guide, and premium conservation workshop slot.",
+    "price": 72,
+    "currency": "USD",
+    "validDays": 1,
+    "cancellable": true
   }
 ]

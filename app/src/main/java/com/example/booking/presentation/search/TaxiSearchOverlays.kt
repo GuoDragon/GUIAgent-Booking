@@ -69,6 +69,11 @@ enum class TaxiRoutePlannerFocus {
     Destination
 }
 
+data class TaxiQuickTimeOption(
+    val label: String,
+    val dateTime: LocalDateTime
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaxiRoutePlannerDialog(
@@ -251,6 +256,7 @@ fun TaxiScheduleTimeSheet(
     title: String,
     helperText: String,
     initialDateTime: LocalDateTime,
+    quickOptions: List<TaxiQuickTimeOption> = emptyList(),
     onDismissRequest: () -> Unit,
     onConfirm: (LocalDateTime) -> Unit
 ) {
@@ -284,6 +290,37 @@ fun TaxiScheduleTimeSheet(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 6.dp)
             )
+            if (quickOptions.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    quickOptions.distinctBy { it.label }.take(3).forEach { option ->
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    datePickerState.selectedDateMillis =
+                                        BookingFormatters.localDateToEpochMillis(option.dateTime.toLocalDate())
+                                    timeText = BookingFormatters.formatTime(option.dateTime)
+                                },
+                            shape = RoundedCornerShape(10.dp),
+                            color = BookingWhite,
+                            border = BorderStroke(1.dp, BookingGray)
+                        ) {
+                            Text(
+                                text = option.label,
+                                color = BookingBlueLight,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
+                            )
+                        }
+                    }
+                }
+            }
             DatePicker(
                 state = datePickerState,
                 title = null,

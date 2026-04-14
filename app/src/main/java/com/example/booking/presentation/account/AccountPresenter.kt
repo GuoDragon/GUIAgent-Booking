@@ -8,6 +8,8 @@ class AccountPresenter(
     private val view: AccountContract.View
 ) : AccountContract.Presenter {
 
+    override fun observeRuntimeVersion() = DataRepository.observeRuntimeDataVersion()
+
     override fun loadData(context: Context) {
         val user = DataRepository.loadUsers(context).firstOrNull()
 

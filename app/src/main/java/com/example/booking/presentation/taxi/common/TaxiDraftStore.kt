@@ -9,10 +9,10 @@ enum class TaxiTripType(val label: String) {
 
 data class TaxiDraft(
     val tripType: TaxiTripType = TaxiTripType.OneWay,
-    val pickupLocation: String = "John F. Kennedy International Airport",
-    val destination: String = "Manhattan City Center",
-    val pickupDateTime: LocalDateTime = LocalDateTime.now().plusDays(1).withHour(11).withMinute(0),
-    val returnDateTime: LocalDateTime = LocalDateTime.now().plusDays(2).withHour(17).withMinute(0),
+    val pickupLocation: String = "London Heathrow Airport",
+    val destination: String = "London Heathrow Airport Hilton Hotel",
+    val pickupDateTime: LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0),
+    val returnDateTime: LocalDateTime = LocalDateTime.now().withSecond(0).withNano(0).plusHours(6),
     val returnDateTimeConfirmed: Boolean = false,
     val passengerCount: Int = 2,
     val selectedRouteId: String? = null,

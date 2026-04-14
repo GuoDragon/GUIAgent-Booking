@@ -72,7 +72,6 @@ import com.example.booking.ui.theme.BookingWhite
 fun StaysSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onDestinationClick: () -> Unit,
     onDateClick: () -> Unit,
     onGuestsClick: () -> Unit,
@@ -87,7 +86,6 @@ fun StaysSearchContent(
         item {
             StaysHeroSection(
                 uiState = uiState,
-                onProductSelected = onProductSelected,
                 onDestinationClick = onDestinationClick,
                 onDateClick = onDateClick,
                 onGuestsClick = onGuestsClick,
@@ -137,7 +135,6 @@ fun StaysSearchContent(
 fun FlightsSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onTripTypeSelected: (FlightTripType) -> Unit,
     onDepartureClick: () -> Unit,
     onArrivalClick: () -> Unit,
@@ -165,11 +162,6 @@ fun FlightsSearchContent(
                         .background(BookingWhite)
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    SearchProductTabs(
-                        selectedProduct = SearchProduct.Flights,
-                        onProductSelected = onProductSelected
-                    )
-                    Spacer(modifier = Modifier.height(18.dp))
                     DarkSearchCard {
                         FlightTripTypeRow(
                             selectedTripType = uiState.flightTripType,
@@ -241,7 +233,6 @@ fun FlightsSearchContent(
 fun FlightHotelSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onTripTypeSelected: (FlightHotelTripType) -> Unit,
     onDepartureClick: () -> Unit,
     onArrivalClick: () -> Unit,
@@ -264,12 +255,6 @@ fun FlightHotelSearchContent(
             contentPadding = PaddingValues(top = topPadding, start = 16.dp, end = 16.dp, bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            item {
-                SearchProductTabs(
-                    selectedProduct = SearchProduct.FlightHotel,
-                    onProductSelected = onProductSelected
-                )
-            }
             item {
                 BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -352,7 +337,6 @@ fun FlightHotelSearchContent(
 fun CarRentalSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onReturnToSameLocationChanged: (Boolean) -> Unit,
     onPickupLocationClick: () -> Unit,
     onDateClick: () -> Unit,
@@ -371,11 +355,6 @@ fun CarRentalSearchContent(
                     .background(BookingWhite)
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                SearchProductTabs(
-                    selectedProduct = SearchProduct.CarRental,
-                    onProductSelected = onProductSelected
-                )
-                Spacer(modifier = Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -442,7 +421,6 @@ fun CarRentalSearchContent(
 fun TaxiSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onTripTypeSelected: (TaxiTripType) -> Unit,
     onPickupLocationClick: () -> Unit,
     onDestinationClick: () -> Unit,
@@ -463,11 +441,6 @@ fun TaxiSearchContent(
                     .background(BookingWhite)
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                SearchProductTabs(
-                    selectedProduct = SearchProduct.Taxi,
-                    onProductSelected = onProductSelected
-                )
-                Spacer(modifier = Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -560,7 +533,6 @@ fun TaxiSearchContent(
 fun AttractionsSearchContent(
     uiState: SearchUiState,
     topPadding: Dp,
-    onProductSelected: (SearchProduct) -> Unit,
     onDestinationClick: () -> Unit,
     onDateClick: () -> Unit,
     onSearchClick: () -> Unit
@@ -577,11 +549,6 @@ fun AttractionsSearchContent(
                     .background(BookingWhite)
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                SearchProductTabs(
-                    selectedProduct = SearchProduct.Attractions,
-                    onProductSelected = onProductSelected
-                )
-                Spacer(modifier = Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -667,7 +634,6 @@ fun AttractionsSearchContent(
 @Composable
 private fun StaysHeroSection(
     uiState: SearchUiState,
-    onProductSelected: (SearchProduct) -> Unit,
     onDestinationClick: () -> Unit,
     onDateClick: () -> Unit,
     onGuestsClick: () -> Unit,
@@ -679,11 +645,6 @@ private fun StaysHeroSection(
             .background(BookingWhite)
             .padding(horizontal = 16.dp, vertical = 18.dp)
     ) {
-        SearchProductTabs(
-            selectedProduct = SearchProduct.Stays,
-            onProductSelected = onProductSelected
-        )
-        Spacer(modifier = Modifier.height(18.dp))
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -707,68 +668,6 @@ private fun StaysHeroSection(
                 Spacer(modifier = Modifier.height(12.dp))
                 BookingPrimaryButton(text = "Search", onClick = onSearchClick)
             }
-        }
-    }
-}
-
-@Composable
-private fun SearchProductTabs(
-    selectedProduct: SearchProduct,
-    onProductSelected: (SearchProduct) -> Unit
-) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        val products = listOf(
-            SearchProduct.Stays to Icons.Filled.Hotel,
-            SearchProduct.Flights to Icons.Filled.FlightTakeoff,
-            SearchProduct.FlightHotel to Icons.Filled.Luggage,
-            SearchProduct.CarRental to Icons.Filled.DirectionsCar,
-            SearchProduct.Taxi to Icons.Filled.LocalTaxi,
-            SearchProduct.Attractions to Icons.Filled.LocalActivity
-        )
-        items(products) { (product, icon) ->
-            ProductTabChip(
-                icon = icon,
-                title = product.title,
-                selected = product == selectedProduct,
-                onClick = { onProductSelected(product) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProductTabChip(
-    icon: ImageVector,
-    title: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(999.dp),
-        color = if (selected) BookingBlueLight.copy(alpha = 0.12f) else BookingWhite,
-        border = BorderStroke(1.dp, if (selected) BookingBlueLight else BookingGray)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 9.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (selected) BookingBlue else BookingTextPrimary,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = title,
-                color = if (selected) BookingBlue else BookingTextPrimary,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }

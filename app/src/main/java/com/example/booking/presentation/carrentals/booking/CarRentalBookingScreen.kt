@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.booking.presentation.carrentals.common.CarRentalDraftStore
 import com.example.booking.ui.components.BookingBackTopBar
 import com.example.booking.ui.components.BookingEmptyState
 import com.example.booking.ui.components.BookingPrimaryButton
@@ -52,6 +56,7 @@ fun CarRentalBookingSummaryScreen(
 ) {
     val context = LocalContext.current.applicationContext
     var uiState by remember { mutableStateOf(CarRentalSummaryUiState()) }
+    var childSeatRequired by rememberSaveable { mutableStateOf(false) }
 
     val view = remember {
         object : CarRentalSummaryContract.View {
@@ -66,6 +71,10 @@ fun CarRentalBookingSummaryScreen(
         presenter.loadData(context)
     }
 
+    LaunchedEffect(uiState.childSeatRequired) {
+        childSeatRequired = uiState.childSeatRequired
+    }
+
     Scaffold(
         topBar = {
             BookingBackTopBar(title = "Booking summary", onBackClick = onBackClick)
@@ -76,9 +85,9 @@ fun CarRentalBookingSummaryScreen(
                 com.example.booking.presentation.stays.common.StayFooterBar(
                     priceLine = uiState.totalPriceText,
                     subLine = uiState.totalLabel,
-                    buttonText = "Next step",
+                    buttonText = "Confirm booking",
                     onClick = {
-                        presenter.completeBooking(context)?.let(onBookingComplete)
+                        presenter.completeBooking(context, childSeatRequired)?.let(onBookingComplete)
                     }
                 )
             }
@@ -148,6 +157,38 @@ fun CarRentalBookingSummaryScreen(
                 }
                 item {
                     BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Child safety seat",
+                                    color = BookingTextPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "Add a certified child seat for airport pick-up",
+                                    color = BookingTextSecondary,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                            Checkbox(
+                                checked = childSeatRequired,
+                                onCheckedChange = { checked ->
+                                    childSeatRequired = checked
+                                    CarRentalDraftStore.update { draft ->
+                                        draft.copy(childSeatRequired = checked)
+                                    }
+                                    presenter.loadData(context)
+                                }
+                            )
+                        }
+                    }
+                }
+                item {
+                    BookingRoundedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Payable today",
                             style = MaterialTheme.typography.titleLarge,
@@ -165,6 +206,12 @@ fun CarRentalBookingSummaryScreen(
                                 Text(text = value, color = BookingTextPrimary)
                             }
                         }
+                        Text(
+                            text = "Tap Confirm booking to create this order in Trips.",
+                            color = BookingTextSecondary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 14.dp)
+                        )
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.example.booking.data
 import android.content.Context
 import com.example.booking.model.Airline
 import com.example.booking.model.Airport
+import com.example.booking.model.AccountActionSignal
 import com.example.booking.model.Attraction
 import com.example.booking.model.AttractionTicket
 import com.example.booking.model.BookingSignal
@@ -19,6 +20,7 @@ import com.example.booking.model.TravelCompanion
 import com.example.booking.model.User
 import com.example.booking.model.WishlistItem
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,20 +28,30 @@ import java.io.File
 
 object DataRepository {
 
+    private const val USERS_FILE_NAME = "users.json"
     private const val ORDERS_FILE_NAME = "orders.json"
+    private const val RUNTIME_USERS_FILE_NAME = "runtime_users.json"
     private const val RUNTIME_SEARCH_SIGNALS_FILE_NAME = "runtime_search_signals.json"
     private const val RUNTIME_BOOKING_SIGNALS_FILE_NAME = "runtime_booking_signals.json"
     private const val RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME = "runtime_hotel_review_signals.json"
+    private const val RUNTIME_ACCOUNT_ACTION_SIGNALS_FILE_NAME = "runtime_account_action_signals.json"
 
     private val gson = Gson()
+    private val gsonPretty = GsonBuilder().setPrettyPrinting().create()
     private val runtimeDataVersion = MutableStateFlow(0)
     private val writeLock = Any()
 
     fun initializeRuntimeFiles(context: Context) {
         ensureSeededAssetFile(context, ORDERS_FILE_NAME)
+        ensureSeededAssetFile(
+            context = context,
+            fileName = RUNTIME_USERS_FILE_NAME,
+            sourceAssetFileName = USERS_FILE_NAME
+        )
         ensureListFile(context, RUNTIME_SEARCH_SIGNALS_FILE_NAME)
         ensureListFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME)
         ensureListFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME)
+        ensureListFile(context, RUNTIME_ACCOUNT_ACTION_SIGNALS_FILE_NAME)
     }
 
     fun observeRuntimeDataVersion(): StateFlow<Int> = runtimeDataVersion
@@ -56,8 +68,14 @@ object DataRepository {
         return appFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME).absolutePath
     }
 
+    fun getRuntimeAccountActionSignalFilePath(context: Context): String {
+        initializeRuntimeFiles(context)
+        return appFile(context, RUNTIME_ACCOUNT_ACTION_SIGNALS_FILE_NAME).absolutePath
+    }
+
     fun loadUsers(context: Context): List<User> {
-        val json = loadJsonFromAssets(context, "users.json")
+        initializeRuntimeFiles(context)
+        val json = readText(appFile(context, RUNTIME_USERS_FILE_NAME))
         return gson.fromJson(json, object : TypeToken<List<User>>() {}.type)
     }
 
@@ -149,10 +167,16 @@ object DataRepository {
         return gson.fromJson(json, object : TypeToken<List<HotelReviewSignal>>() {}.type)
     }
 
+    fun loadAccountActionSignals(context: Context): List<AccountActionSignal> {
+        initializeRuntimeFiles(context)
+        val json = readText(appFile(context, RUNTIME_ACCOUNT_ACTION_SIGNALS_FILE_NAME))
+        return gson.fromJson(json, object : TypeToken<List<AccountActionSignal>>() {}.type)
+    }
+
     fun appendOrder(context: Context, order: Order) {
         synchronized(writeLock) {
             val updatedOrders = loadOrders(context).toMutableList().apply { add(order) }
-            writeText(appFile(context, ORDERS_FILE_NAME), gson.toJson(updatedOrders))
+            writeJson(appFile(context, ORDERS_FILE_NAME), updatedOrders)
             bumpRuntimeVersion()
         }
     }
@@ -160,7 +184,7 @@ object DataRepository {
     fun appendSearchSignal(context: Context, signal: SearchSignal) {
         synchronized(writeLock) {
             val updatedSignals = loadSearchSignals(context).toMutableList().apply { add(signal) }
-            writeText(appFile(context, RUNTIME_SEARCH_SIGNALS_FILE_NAME), gson.toJson(updatedSignals))
+            writeJson(appFile(context, RUNTIME_SEARCH_SIGNALS_FILE_NAME), updatedSignals)
             bumpRuntimeVersion()
         }
     }
@@ -168,7 +192,7 @@ object DataRepository {
     fun appendBookingSignal(context: Context, signal: BookingSignal) {
         synchronized(writeLock) {
             val updatedSignals = loadBookingSignals(context).toMutableList().apply { add(signal) }
-            writeText(appFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME), gson.toJson(updatedSignals))
+            writeJson(appFile(context, RUNTIME_BOOKING_SIGNALS_FILE_NAME), updatedSignals)
             bumpRuntimeVersion()
         }
     }
@@ -182,7 +206,69 @@ object DataRepository {
             } else {
                 updatedSignals.add(signal)
             }
-            writeText(appFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME), gson.toJson(updatedSignals))
+            writeJson(appFile(context, RUNTIME_HOTEL_REVIEW_SIGNALS_FILE_NAME), updatedSignals)
+            bumpRuntimeVersion()
+        }
+    }
+
+    fun updatePrimaryUserProfile(
+        context: Context,
+        firstName: String,
+        lastName: String,
+        phone: String
+    ): User? {
+        synchronized(writeLock) {
+            val users = loadUsers(context).toMutableList()
+            val existing = users.firstOrNull() ?: return null
+            val updated = existing.copy(
+                firstName = firstName.trim(),
+                lastName = lastName.trim(),
+                phone = phone.trim().ifBlank { null }
+            )
+            users[0] = updated
+            writeJson(appFile(context, RUNTIME_USERS_FILE_NAME), users)
+            bumpRuntimeVersion()
+            return updated
+        }
+    }
+
+    fun calculateSpentAmount(
+        context: Context,
+        statuses: Set<String> = setOf("COMPLETED", "ACTIVE")
+    ): Double {
+        return loadOrders(context)
+            .asSequence()
+            .filter { it.status in statuses }
+            .sumOf { it.totalPrice }
+    }
+
+    fun cancelActiveOrdersAfter(
+        context: Context,
+        cutoffMillis: Long
+    ): Int {
+        synchronized(writeLock) {
+            val orders = loadOrders(context).toMutableList()
+            var affectedCount = 0
+            val updatedOrders = orders.map { order ->
+                if (order.status == "ACTIVE" && order.startDate > cutoffMillis) {
+                    affectedCount += 1
+                    order.copy(status = "CANCELLED")
+                } else {
+                    order
+                }
+            }
+            if (affectedCount > 0) {
+                writeJson(appFile(context, ORDERS_FILE_NAME), updatedOrders)
+                bumpRuntimeVersion()
+            }
+            return affectedCount
+        }
+    }
+
+    fun appendAccountActionSignal(context: Context, signal: AccountActionSignal) {
+        synchronized(writeLock) {
+            val updatedSignals = loadAccountActionSignals(context).toMutableList().apply { add(signal) }
+            writeJson(appFile(context, RUNTIME_ACCOUNT_ACTION_SIGNALS_FILE_NAME), updatedSignals)
             bumpRuntimeVersion()
         }
     }
@@ -191,10 +277,14 @@ object DataRepository {
         runtimeDataVersion.value = runtimeDataVersion.value + 1
     }
 
-    private fun ensureSeededAssetFile(context: Context, fileName: String) {
+    private fun ensureSeededAssetFile(
+        context: Context,
+        fileName: String,
+        sourceAssetFileName: String = fileName
+    ) {
         val file = appFile(context, fileName)
         if (!file.exists()) {
-            writeText(file, loadJsonFromAssets(context, fileName))
+            writeText(file, loadJsonFromAssets(context, sourceAssetFileName))
         }
     }
 
@@ -212,6 +302,10 @@ object DataRepository {
     private fun writeText(file: File, text: String) {
         file.parentFile?.mkdirs()
         file.writeText(text, Charsets.UTF_8)
+    }
+
+    private fun writeJson(file: File, value: Any) {
+        writeText(file, gsonPretty.toJson(value))
     }
 
     private fun readText(file: File): String {

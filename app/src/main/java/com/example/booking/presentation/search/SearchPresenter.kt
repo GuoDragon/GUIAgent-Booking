@@ -218,7 +218,10 @@ class SearchPresenter(
                         city = airport.city
                     )
                 },
-                carPickupLocations = carRentals.map { it.pickupLocation }.distinct().sorted()
+                carPickupLocations = buildCarPickupLocations(
+                    carRentals = carRentals,
+                    currentLocation = carDraft.pickupLocation
+                )
             )
         )
     }
@@ -356,24 +359,22 @@ class SearchPresenter(
 
     override fun selectTaxiTripType(context: Context, tripType: TaxiTripType) {
         TaxiDraftStore.update { draft ->
-            val minimumReturnTime = draft.pickupDateTime.plusHours(1)
-            draft.copy(
-                tripType = tripType,
-                returnDateTime = if (tripType == TaxiTripType.RoundTrip) {
-                    if (draft.returnDateTime.isAfter(minimumReturnTime)) {
-                        draft.returnDateTime
-                    } else {
-                        minimumReturnTime
-                    }
-                } else {
-                    draft.pickupDateTime.plusHours(6)
-                },
-                returnDateTimeConfirmed = if (tripType == TaxiTripType.RoundTrip) {
-                    draft.returnDateTimeConfirmed
-                } else {
-                    false
-                }
-            )
+            if (tripType == TaxiTripType.RoundTrip) {
+                val tomorrowNoon = java.time.LocalDate.now().plusDays(1).atTime(12, 0)
+                val dayAfterTomorrowMorning = java.time.LocalDate.now().plusDays(2).atTime(8, 0)
+                draft.copy(
+                    tripType = tripType,
+                    pickupDateTime = tomorrowNoon,
+                    returnDateTime = dayAfterTomorrowMorning,
+                    returnDateTimeConfirmed = true
+                )
+            } else {
+                draft.copy(
+                    tripType = tripType,
+                    returnDateTime = draft.pickupDateTime.plusHours(6),
+                    returnDateTimeConfirmed = false
+                )
+            }
         }
         loadData(context)
     }
@@ -646,8 +647,22 @@ class SearchPresenter(
                 BookingFormatters.formatTime(draft.returnDateTime)
             }"
         } else {
-            "Add a return time"
+            "Add return time (required)"
         }
+    }
+
+    private fun buildCarPickupLocations(
+        carRentals: List<com.example.booking.model.CarRental>,
+        currentLocation: String
+    ): List<String> {
+        val stableLocations = carRentals.map { it.pickupLocation }.distinct().sorted()
+        return listOf(
+            currentLocation,
+            "Hong Kong International Airport (HKG)",
+            "London Heathrow Airport (LHR)"
+        ).filter { it.isNotBlank() }
+            .plus(stableLocations)
+            .distinct()
     }
 
     private fun updateFlightHotelDraft(

@@ -5,7 +5,7 @@
     "destination": "Manhattan City Center",
     "vehicleType": "Standard",
     "maxPassengers": 4,
-    "price": 55.00,
+    "price": 55.0,
     "currency": "USD",
     "estimatedDurationMinutes": 45
   },
@@ -15,7 +15,7 @@
     "destination": "Downtown Los Angeles Hotel District",
     "vehicleType": "Premium",
     "maxPassengers": 4,
-    "price": 75.00,
+    "price": 75.0,
     "currency": "USD",
     "estimatedDurationMinutes": 35
   },
@@ -25,7 +25,7 @@
     "destination": "Central London",
     "vehicleType": "Luxury",
     "maxPassengers": 3,
-    "price": 120.00,
+    "price": 120.0,
     "currency": "USD",
     "estimatedDurationMinutes": 50
   },
@@ -35,7 +35,7 @@
     "destination": "Paris City Center",
     "vehicleType": "Standard",
     "maxPassengers": 4,
-    "price": 60.00,
+    "price": 60.0,
     "currency": "USD",
     "estimatedDurationMinutes": 40
   },
@@ -45,7 +45,7 @@
     "destination": "Downtown Dubai Hotel Area",
     "vehicleType": "Premium",
     "maxPassengers": 4,
-    "price": 35.00,
+    "price": 35.0,
     "currency": "USD",
     "estimatedDurationMinutes": 20
   },
@@ -55,7 +55,7 @@
     "destination": "Shinjuku City Center",
     "vehicleType": "Van",
     "maxPassengers": 8,
-    "price": 95.00,
+    "price": 95.0,
     "currency": "USD",
     "estimatedDurationMinutes": 60
   },
@@ -65,7 +65,7 @@
     "destination": "Las Ramblas Hotel District",
     "vehicleType": "Standard",
     "maxPassengers": 4,
-    "price": 40.00,
+    "price": 40.0,
     "currency": "USD",
     "estimatedDurationMinutes": 25
   },
@@ -75,8 +75,58 @@
     "destination": "Marina Bay City Center",
     "vehicleType": "Van",
     "maxPassengers": 6,
-    "price": 25.00,
+    "price": 25.0,
     "currency": "USD",
     "estimatedDurationMinutes": 25
+  },
+  {
+    "routeId": "taxi009",
+    "pickupLocation": "London Heathrow Airport",
+    "destination": "London Heathrow Airport Hilton Hotel",
+    "vehicleType": "Premium",
+    "maxPassengers": 4,
+    "price": 28.0,
+    "currency": "USD",
+    "estimatedDurationMinutes": 12
+  },
+  {
+    "routeId": "taxi010",
+    "pickupLocation": "London Heathrow Airport",
+    "destination": "London Heathrow Airport Hilton Hotel",
+    "vehicleType": "Standard",
+    "maxPassengers": 4,
+    "price": 22.0,
+    "currency": "USD",
+    "estimatedDurationMinutes": 14
+  },
+  {
+    "routeId": "taxi011",
+    "pickupLocation": "London Heathrow Airport Hilton Hotel",
+    "destination": "London Heathrow Airport",
+    "vehicleType": "Premium",
+    "maxPassengers": 4,
+    "price": 26.0,
+    "currency": "USD",
+    "estimatedDurationMinutes": 12
+  },
+  {
+    "routeId": "taxi012",
+    "pickupLocation": "Hong Kong International Airport",
+    "destination": "Regal Airport Hotel",
+    "vehicleType": "Luxury",
+    "maxPassengers": 4,
+    "price": 33.0,
+    "currency": "USD",
+    "estimatedDurationMinutes": 10
+  },
+  {
+    "routeId": "taxi013",
+    "pickupLocation": "Hong Kong International Airport",
+    "destination": "Regal Airport Hotel",
+    "vehicleType": "Premium",
+    "maxPassengers": 4,
+    "price": 25.0,
+    "currency": "USD",
+    "estimatedDurationMinutes": 11
   }
 ]

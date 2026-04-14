@@ -17,12 +17,14 @@ object CarRentalFlowMapper {
     fun filterCars(cars: List<CarRental>, draft: CarRentalDraft): List<CarRental> {
         val filter = draft.filterState
         return cars.filter { car ->
+            val pickupLocationMatch = draft.pickupLocation.isBlank() ||
+                car.pickupLocation.equals(draft.pickupLocation, ignoreCase = true)
             val locationMatch = filter.selectedLocations.isEmpty() || filter.selectedLocations.any { it in car.pickupLocation }
             val categoryMatch = filter.selectedCategories.isEmpty() || car.category in filter.selectedCategories
             val cancellationMatch = !filter.freeCancellationOnly || car.freeCancellation
             val mileageMatch = !filter.unlimitedMileageOnly || car.unlimitedMileage
             val priceMatch = filter.maxPricePerDay == null || car.pricePerDay <= filter.maxPricePerDay
-            locationMatch && categoryMatch && cancellationMatch && mileageMatch && priceMatch
+            pickupLocationMatch && locationMatch && categoryMatch && cancellationMatch && mileageMatch && priceMatch
         }
     }
 

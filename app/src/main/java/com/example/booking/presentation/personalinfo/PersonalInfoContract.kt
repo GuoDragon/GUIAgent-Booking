@@ -9,7 +9,21 @@ interface PersonalInfoContract {
 
     interface Presenter {
         fun loadData(context: Context)
+        fun updateName(context: Context, firstName: String, lastName: String): Boolean
+        fun updatePhone(context: Context, phoneCountryCode: String, phoneNumber: String): Boolean
     }
+}
+
+enum class PersonalInfoFieldKey {
+    Name,
+    Gender,
+    DateOfBirth,
+    PassportDetails,
+    EmailAddress,
+    PhoneNumber,
+    Address,
+    DisplayName,
+    Nationality
 }
 
 data class PersonalInfoUiState(
@@ -20,7 +34,9 @@ data class PersonalInfoUiState(
 )
 
 data class InfoFieldUiModel(
+    val key: PersonalInfoFieldKey,
     val title: String,
     val value: String,
-    val badge: String? = null
+    val badge: String? = null,
+    val editable: Boolean = false
 )

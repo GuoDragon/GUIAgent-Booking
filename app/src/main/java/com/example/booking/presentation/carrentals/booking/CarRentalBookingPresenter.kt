@@ -13,6 +13,10 @@ class CarRentalSummaryPresenter(
     private val view: CarRentalSummaryContract.View
 ) : CarRentalSummaryContract.Presenter {
 
+    companion object {
+        private const val CHILD_SEAT_PRICE_PER_DAY = 12.0
+    }
+
     override fun loadData(context: Context) {
         val draft = CarRentalDraftStore.snapshot()
         val car = DataRepository.loadCarRentals(context).firstOrNull { it.carId == draft.selectedCarId }
@@ -23,7 +27,8 @@ class CarRentalSummaryPresenter(
         val days = CarRentalFlowMapper.rentalDays(draft)
         val basePrice = car.pricePerDay * days
         val discount = basePrice * CarRentalFlowMapper.geniusDiscount(car)
-        val subtotal = basePrice - discount
+        val childSeatPrice = if (draft.childSeatRequired) days * CHILD_SEAT_PRICE_PER_DAY else 0.0
+        val subtotal = basePrice - discount + childSeatPrice
         view.showState(
             CarRentalSummaryUiState(
                 title = car.carModel,
@@ -35,25 +40,37 @@ class CarRentalSummaryPresenter(
                 priceLineItems = listOf(
                     "Car rental price" to BookingFormatters.formatCurrency(basePrice, car.currency),
                     "Discounts and savings" to "-${BookingFormatters.formatCurrency(discount, car.currency)}",
+                    "Child safety seat" to BookingFormatters.formatCurrency(childSeatPrice, car.currency),
                     "Subtotal" to BookingFormatters.formatCurrency(subtotal, car.currency)
                 ),
                 totalPriceText = BookingFormatters.formatCurrency(subtotal, car.currency),
                 totalLabel = "Total rental price",
-                canContinue = true
+                canContinue = true,
+                childSeatRequired = draft.childSeatRequired
             )
         )
     }
 
-    override fun completeBooking(context: Context): String? {
+    override fun completeBooking(context: Context, childSeatRequired: Boolean): String? {
+        CarRentalDraftStore.update { draft ->
+            draft.copy(childSeatRequired = childSeatRequired)
+        }
         val draft = CarRentalDraftStore.snapshot()
         val user = DataRepository.loadUsers(context).firstOrNull()
         val car = DataRepository.loadCarRentals(context).firstOrNull { it.carId == draft.selectedCarId } ?: return null
         val days = CarRentalFlowMapper.rentalDays(draft)
-        val totalPrice = car.pricePerDay * days * (1 - CarRentalFlowMapper.geniusDiscount(car))
+        val basePrice = car.pricePerDay * days
+        val discount = basePrice * CarRentalFlowMapper.geniusDiscount(car)
+        val childSeatPrice = if (draft.childSeatRequired) days * CHILD_SEAT_PRICE_PER_DAY else 0.0
+        val totalPrice = basePrice - discount + childSeatPrice
         val now = System.currentTimeMillis()
         val orderId = "car_rental_${UUID.randomUUID()}"
         val userId = user?.userId ?: "user001"
-        val itemName = "${car.companyName} - ${car.carModel}"
+        val itemName = if (draft.childSeatRequired) {
+            "${car.companyName} - ${car.carModel} + Child seat"
+        } else {
+            "${car.companyName} - ${car.carModel}"
+        }
         val startDate = BookingFormatters.localDateTimeToEpochMillis(draft.pickupDateTime)
         val endDate = BookingFormatters.localDateTimeToEpochMillis(draft.returnDateTime)
 

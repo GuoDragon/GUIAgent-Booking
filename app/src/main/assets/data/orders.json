@@ -9,7 +9,7 @@
     "bookingDate": 1700000000000,
     "startDate": 1701000000000,
     "endDate": 1701432000000,
-    "totalPrice": 750.00,
+    "totalPrice": 750.0,
     "currency": "USD",
     "guestCount": 2
   },
@@ -23,7 +23,7 @@
     "bookingDate": 1701500000000,
     "startDate": 1702000000000,
     "endDate": null,
-    "totalPrice": 320.00,
+    "totalPrice": 320.0,
     "currency": "USD",
     "guestCount": 1
   },
@@ -34,10 +34,10 @@
     "status": "ACTIVE",
     "itemId": "car001",
     "itemName": "Hertz - Toyota Camry",
-    "bookingDate": 1710000000000,
-    "startDate": 1711000000000,
-    "endDate": 1711600000000,
-    "totalPrice": 280.00,
+    "bookingDate": 1775034000000,
+    "startDate": 1778839200000,
+    "endDate": 1779098400000,
+    "totalPrice": 280.0,
     "currency": "USD",
     "guestCount": 1
   },
@@ -51,7 +51,7 @@
     "bookingDate": 1705000000000,
     "startDate": 1706000000000,
     "endDate": null,
-    "totalPrice": 45.00,
+    "totalPrice": 45.0,
     "currency": "USD",
     "guestCount": 2
   },
@@ -65,7 +65,7 @@
     "bookingDate": 1702000000000,
     "startDate": 1702050000000,
     "endDate": null,
-    "totalPrice": 75.00,
+    "totalPrice": 75.0,
     "currency": "USD",
     "guestCount": 2
   },
@@ -76,10 +76,10 @@
     "status": "ACTIVE",
     "itemId": "crs001",
     "itemName": "Royal Caribbean - Symphony of the Seas (Caribbean)",
-    "bookingDate": 1712000000000,
-    "startDate": 1714000000000,
-    "endDate": 1714604800000,
-    "totalPrice": 2400.00,
+    "bookingDate": 1775127600000,
+    "startDate": 1781942400000,
+    "endDate": 1782547200000,
+    "totalPrice": 2400.0,
     "currency": "USD",
     "guestCount": 2
   },
@@ -93,7 +93,7 @@
     "bookingDate": 1706000000000,
     "startDate": 1707000000000,
     "endDate": 1707600000000,
-    "totalPrice": 1100.00,
+    "totalPrice": 1100.0,
     "currency": "USD",
     "guestCount": 3
   },
@@ -107,7 +107,7 @@
     "bookingDate": 1698000000000,
     "startDate": 1699000000000,
     "endDate": null,
-    "totalPrice": 580.00,
+    "totalPrice": 580.0,
     "currency": "USD",
     "guestCount": 1
   },
@@ -118,10 +118,10 @@
     "status": "ACTIVE",
     "itemId": "attr003",
     "itemName": "Tokyo Skytree Observation Deck",
-    "bookingDate": 1713000000000,
-    "startDate": 1714500000000,
+    "bookingDate": 1775217600000,
+    "startDate": 1776675600000,
     "endDate": null,
-    "totalPrice": 30.00,
+    "totalPrice": 30.0,
     "currency": "USD",
     "guestCount": 1
   },
@@ -135,7 +135,7 @@
     "bookingDate": 1708000000000,
     "startDate": 1709000000000,
     "endDate": 1709800000000,
-    "totalPrice": 420.00,
+    "totalPrice": 420.0,
     "currency": "USD",
     "guestCount": 1
   }

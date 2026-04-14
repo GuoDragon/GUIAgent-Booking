@@ -1,6 +1,7 @@
 package com.example.booking.presentation.account
 
 import android.content.Context
+import kotlinx.coroutines.flow.StateFlow
 
 interface AccountContract {
     interface View {
@@ -8,6 +9,7 @@ interface AccountContract {
     }
 
     interface Presenter {
+        fun observeRuntimeVersion(): StateFlow<Int>
         fun loadData(context: Context)
     }
 }

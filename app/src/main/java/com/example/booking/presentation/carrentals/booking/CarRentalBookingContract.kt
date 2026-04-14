@@ -9,7 +9,7 @@ interface CarRentalSummaryContract {
 
     interface Presenter {
         fun loadData(context: Context)
-        fun completeBooking(context: Context): String?
+        fun completeBooking(context: Context, childSeatRequired: Boolean): String?
     }
 }
 
@@ -23,7 +23,8 @@ data class CarRentalSummaryUiState(
     val priceLineItems: List<Pair<String, String>> = emptyList(),
     val totalPriceText: String = "",
     val totalLabel: String = "",
-    val canContinue: Boolean = false
+    val canContinue: Boolean = false,
+    val childSeatRequired: Boolean = false
 )
 
 interface CarRentalBookingSuccessContract {

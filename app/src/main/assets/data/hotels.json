@@ -11,10 +11,19 @@
     "description": "An iconic luxury hotel in the heart of Kensington, offering elegant rooms with views of Hyde Park and world-class dining experiences.",
     "pricePerNight": 320,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Spa", "Fitness Center", "Restaurant", "Room Service", "Concierge", "Valet Parking", "Pool"],
+    "amenities": [
+      "Free WiFi",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Room Service",
+      "Concierge",
+      "Valet Parking",
+      "Pool"
+    ],
     "imageUrl": null,
-    "latitude": 51.5010,
-    "longitude": -0.1870
+    "latitude": 51.501,
+    "longitude": -0.187
   },
   {
     "hotelId": "htl002",
@@ -28,7 +37,15 @@
     "description": "A charming boutique hotel nestled in the historic Le Marais district, just steps from Notre-Dame Cathedral and the Seine River.",
     "pricePerNight": 245,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Restaurant", "Bar", "Room Service", "Concierge", "Airport Shuttle", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Airport Shuttle",
+      "Laundry Service"
+    ],
     "imageUrl": null,
     "latitude": 48.8566,
     "longitude": 2.3522
@@ -45,9 +62,18 @@
     "description": "A premier Times Square hotel combining modern luxury with classic New York style, featuring panoramic city views from every room.",
     "pricePerNight": 389,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Fitness Center", "Restaurant", "Bar", "Room Service", "Concierge", "Business Center", "Valet Parking"],
+    "amenities": [
+      "Free WiFi",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Business Center",
+      "Valet Parking"
+    ],
     "imageUrl": null,
-    "latitude": 40.7580,
+    "latitude": 40.758,
     "longitude": -73.9855
   },
   {
@@ -62,10 +88,19 @@
     "description": "An exquisite blend of traditional Japanese hospitality and modern elegance, located near the Imperial Palace with a serene rooftop garden.",
     "pricePerNight": 310,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Spa", "Onsen", "Restaurant", "Room Service", "Fitness Center", "Concierge", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Spa",
+      "Onsen",
+      "Restaurant",
+      "Room Service",
+      "Fitness Center",
+      "Concierge",
+      "Laundry Service"
+    ],
     "imageUrl": null,
     "latitude": 35.6762,
-    "longitude": 139.7450
+    "longitude": 139.745
   },
   {
     "hotelId": "htl005",
@@ -79,7 +114,16 @@
     "description": "A stylish hotel on Barcelona's most famous boulevard, walking distance to Gaudi's masterpieces and the vibrant Gothic Quarter.",
     "pricePerNight": 210,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Pool", "Restaurant", "Bar", "Room Service", "Fitness Center", "Terrace", "Bicycle Rental"],
+    "amenities": [
+      "Free WiFi",
+      "Pool",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Fitness Center",
+      "Terrace",
+      "Bicycle Rental"
+    ],
     "imageUrl": null,
     "latitude": 41.3954,
     "longitude": 2.1631
@@ -96,10 +140,21 @@
     "description": "A stunning waterfront hotel in Dubai Marina offering ultra-luxury suites, a private beach, and breathtaking views of the Arabian Gulf.",
     "pricePerNight": 420,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Private Beach", "Pool", "Spa", "Fitness Center", "Restaurant", "Bar", "Room Service", "Concierge", "Valet Parking"],
+    "amenities": [
+      "Free WiFi",
+      "Private Beach",
+      "Pool",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Valet Parking"
+    ],
     "imageUrl": null,
-    "latitude": 25.0800,
-    "longitude": 55.1400
+    "latitude": 25.08,
+    "longitude": 55.14
   },
   {
     "hotelId": "htl007",
@@ -113,7 +168,16 @@
     "description": "A beautifully restored 17th-century palazzo steps from Piazza Navona, blending Renaissance charm with contemporary Italian design.",
     "pricePerNight": 230,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Restaurant", "Bar", "Room Service", "Concierge", "Airport Shuttle", "Terrace", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Airport Shuttle",
+      "Terrace",
+      "Laundry Service"
+    ],
     "imageUrl": null,
     "latitude": 41.8992,
     "longitude": 12.4731
@@ -130,7 +194,15 @@
     "description": "An intimate canal-side hotel housed in a row of historic merchant houses, offering uniquely designed rooms overlooking Amsterdam's Golden Age canals.",
     "pricePerNight": 195,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Bar", "Room Service", "Concierge", "Bicycle Rental", "Garden", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Bicycle Rental",
+      "Garden",
+      "Laundry Service"
+    ],
     "imageUrl": null,
     "latitude": 52.3702,
     "longitude": 4.8842
@@ -147,7 +219,17 @@
     "description": "A luxurious riverside retreat along the Chao Phraya River, featuring Thai-inspired decor, lush tropical gardens, and an award-winning spa.",
     "pricePerNight": 175,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Pool", "Spa", "Fitness Center", "Restaurant", "Bar", "Room Service", "River Shuttle", "Concierge"],
+    "amenities": [
+      "Free WiFi",
+      "Pool",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "River Shuttle",
+      "Concierge"
+    ],
     "imageUrl": null,
     "latitude": 13.7237,
     "longitude": 100.5098
@@ -164,10 +246,21 @@
     "description": "A world-class luxury hotel overlooking Sydney Harbour, the Opera House, and the Harbour Bridge, with impeccable service and fine dining.",
     "pricePerNight": 350,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Pool", "Spa", "Fitness Center", "Restaurant", "Bar", "Room Service", "Concierge", "Business Center", "Valet Parking"],
+    "amenities": [
+      "Free WiFi",
+      "Pool",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Business Center",
+      "Valet Parking"
+    ],
     "imageUrl": null,
     "latitude": -33.8612,
-    "longitude": 151.2130
+    "longitude": 151.213
   },
   {
     "hotelId": "htl011",
@@ -181,7 +274,16 @@
     "description": "A traditional Ottoman-style hotel in the historic Sultanahmet district, within walking distance of the Blue Mosque and Hagia Sophia.",
     "pricePerNight": 145,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Restaurant", "Bar", "Room Service", "Concierge", "Turkish Bath", "Terrace", "Airport Shuttle"],
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Turkish Bath",
+      "Terrace",
+      "Airport Shuttle"
+    ],
     "imageUrl": null,
     "latitude": 41.0054,
     "longitude": 28.9768
@@ -198,10 +300,19 @@
     "description": "An Art Nouveau gem in Prague's Old Town, offering elegantly appointed rooms just moments from the Astronomical Clock and Charles Bridge.",
     "pricePerNight": 160,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Restaurant", "Bar", "Room Service", "Fitness Center", "Concierge", "Sauna", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Fitness Center",
+      "Concierge",
+      "Sauna",
+      "Laundry Service"
+    ],
     "imageUrl": null,
-    "latitude": 50.0880,
-    "longitude": 14.4280
+    "latitude": 50.088,
+    "longitude": 14.428
   },
   {
     "hotelId": "htl013",
@@ -215,9 +326,19 @@
     "description": "Vienna's most prestigious hotel since 1873, a masterpiece of Ringstrasse architecture offering unparalleled Old World grandeur and Viennese hospitality.",
     "pricePerNight": 380,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Spa", "Fitness Center", "Restaurant", "Bar", "Room Service", "Concierge", "Valet Parking", "Business Center"],
+    "amenities": [
+      "Free WiFi",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Valet Parking",
+      "Business Center"
+    ],
     "imageUrl": null,
-    "latitude": 48.2010,
+    "latitude": 48.201,
     "longitude": 16.3738
   },
   {
@@ -232,7 +353,18 @@
     "description": "A landmark luxury hotel at the heart of Marina Bay, featuring a spectacular infinity pool and sweeping views of the Singapore skyline.",
     "pricePerNight": 365,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Infinity Pool", "Spa", "Fitness Center", "Restaurant", "Bar", "Room Service", "Concierge", "Casino", "Shopping"],
+    "amenities": [
+      "Free WiFi",
+      "Infinity Pool",
+      "Spa",
+      "Fitness Center",
+      "Restaurant",
+      "Bar",
+      "Room Service",
+      "Concierge",
+      "Casino",
+      "Shopping"
+    ],
     "imageUrl": null,
     "latitude": 1.2834,
     "longitude": 103.8607
@@ -249,9 +381,88 @@
     "description": "A cozy boutique hotel in Lisbon's oldest neighborhood, offering authentic Portuguese charm with views of the Tagus River and easy access to Alfama's winding streets.",
     "pricePerNight": 120,
     "currency": "USD",
-    "amenities": ["Free WiFi", "Restaurant", "Bar", "Concierge", "Terrace", "Laundry Service"],
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Bar",
+      "Concierge",
+      "Terrace",
+      "Laundry Service"
+    ],
     "imageUrl": null,
     "latitude": 38.7098,
     "longitude": -9.1325
+  },
+  {
+    "hotelId": "htl016",
+    "name": "London Skyport Hotel",
+    "city": "London",
+    "country": "United Kingdom",
+    "address": "88 Bath Road, Heathrow, London UB3 5AJ",
+    "starRating": 4,
+    "rating": 8.4,
+    "reviewCount": 2610,
+    "description": "Airport-connected London hotel with frequent shuttle transfers and practical business-friendly rooms.",
+    "pricePerNight": 168,
+    "currency": "USD",
+    "amenities": [
+      "Free WiFi",
+      "Airport Shuttle",
+      "Restaurant",
+      "Fitness Center",
+      "Laundry Service",
+      "Bar"
+    ],
+    "imageUrl": null,
+    "latitude": 51.4818,
+    "longitude": -0.4465
+  },
+  {
+    "hotelId": "htl017",
+    "name": "Riverside Canary Suites",
+    "city": "London",
+    "country": "United Kingdom",
+    "address": "21 Marsh Wall, Canary Wharf, London E14 9TP",
+    "starRating": 4,
+    "rating": 8.1,
+    "reviewCount": 1935,
+    "description": "Comfort-focused suites near central transit with airport shuttle add-on service and family-ready layouts.",
+    "pricePerNight": 152,
+    "currency": "USD",
+    "amenities": [
+      "Free WiFi",
+      "Airport Shuttle",
+      "Kitchenette",
+      "Fitness Center",
+      "Room Service",
+      "Business Center"
+    ],
+    "imageUrl": null,
+    "latitude": 51.4995,
+    "longitude": -0.0161
+  },
+  {
+    "hotelId": "htl018",
+    "name": "Covent Garden Boutique Stay",
+    "city": "London",
+    "country": "United Kingdom",
+    "address": "7 Henrietta Street, Covent Garden, London WC2E 8PS",
+    "starRating": 5,
+    "rating": 9.0,
+    "reviewCount": 2277,
+    "description": "High-end boutique stay in Covent Garden with walkable theatre district access and curated city-break amenities.",
+    "pricePerNight": 285,
+    "currency": "USD",
+    "amenities": [
+      "Free WiFi",
+      "Restaurant",
+      "Room Service",
+      "Concierge",
+      "Bar",
+      "Laundry Service"
+    ],
+    "imageUrl": null,
+    "latitude": 51.5119,
+    "longitude": -0.1227
   }
 ]

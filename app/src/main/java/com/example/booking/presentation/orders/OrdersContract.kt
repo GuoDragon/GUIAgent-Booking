@@ -17,13 +17,17 @@ interface OrdersContract {
             rating: Int,
             comment: String
         )
+        fun calculateSpentAmount(context: Context): String
+        fun cancelFutureActiveOrders(context: Context): Int
+        fun prepareStayBookAgain(context: Context, orderId: String): Boolean
     }
 }
 
 data class OrdersUiState(
     val activeOrders: List<OrderCardUiModel> = emptyList(),
     val historyOrders: List<OrderCardUiModel> = emptyList(),
-    val cancelledOrders: List<OrderCardUiModel> = emptyList()
+    val cancelledOrders: List<OrderCardUiModel> = emptyList(),
+    val nextUpcomingTrip: UpcomingTripUiModel? = null
 )
 
 data class OrderCardUiModel(
@@ -39,5 +43,13 @@ data class OrderCardUiModel(
     val reviewActionLabel: String = "",
     val reviewRating: Int? = null,
     val reviewComment: String = "",
-    val reviewUpdatedOn: String = ""
+    val reviewUpdatedOn: String = "",
+    val showBookAgainAction: Boolean = false,
+    val bookAgainActionLabel: String = "Book again"
+)
+
+data class UpcomingTripUiModel(
+    val title: String,
+    val subtitle: String,
+    val supportingText: String
 )
